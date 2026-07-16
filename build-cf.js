@@ -21,7 +21,8 @@ function copyFolderSync(from, to) {
 
 if (process.env.IN_OPEN_NEXT === 'true') {
   console.log("--- Inside OpenNext: Running standard Next.js build ---");
-  execSync('next build', { stdio: 'inherit' });
+  execSync('next build --webpack', { stdio: 'inherit' });
+
 
 
 } else {

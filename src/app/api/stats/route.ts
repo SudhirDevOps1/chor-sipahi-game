@@ -4,7 +4,7 @@ import { players } from "@/db/schema";
 import { privacyHeaders } from "@/lib/privacy";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
+
 
 
 export async function GET() {

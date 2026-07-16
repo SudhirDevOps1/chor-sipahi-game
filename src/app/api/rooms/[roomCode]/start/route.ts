@@ -6,7 +6,7 @@ import { assignRoles } from "@/lib/raja-game";
 import { roomCodeSchema } from "@/lib/validation";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
+
 
 type Context = { params: Promise<{ roomCode: string }> };
 

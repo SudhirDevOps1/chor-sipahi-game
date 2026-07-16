@@ -5,7 +5,7 @@ import { getDeviceId, privacyHeaders } from "@/lib/privacy";
 import { createRoomSchema } from "@/lib/validation";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
+
 
 
 function createRoomCode() {
