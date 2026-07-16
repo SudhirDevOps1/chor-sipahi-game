@@ -50,7 +50,7 @@ export function PrismAnalyticsWidget() {
           pointerEvents: "none",
         }}
       />
-      <div style={{ display: "flex", alignItems: "center", justifySpaceBetween: "space-between", justifyContent: "space-between", position: "relative", zIndex: 2 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 2 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span
             className="prism-pulse-dot"
