@@ -184,9 +184,10 @@ function GameRoom({ state, playerId, busy, onAction, onStart, onInvite, onLeave,
   const me = state.players.find((player) => player.id === playerId);
   const isHost = Boolean(me?.isHost);
   const rank = useMemo(() => [...state.players].sort((a, b) => b.score - a.score), [state.players]);
-  const rajaId = state.publicRoles.raja;
-  const mantriId = state.publicRoles.mantri;
+  const rajaId = state.publicRoles?.raja;
+  const mantriId = state.publicRoles?.mantri;
   const candidates = state.players.filter((player) => player.id !== rajaId && player.id !== mantriId);
+
   const phaseCopy: Record<string, string> = { lobby: "Waiting for all four players", role_reveal: "Read your secret role", minister_reveal: "Raja is calling for the Mantri", guess: "Mantri must identify Chor", round_result: "The truth is on the table", game_over: "The crown has been decided", playing: "Game In Progress" };
   return <main className="game-page"><div className="game-toolbar"><button type="button" className="leave-button" onClick={onLeave}><LogOut size={15} /> Leave</button><div className="room-code-toolbar"><span>PRIVATE ROOM</span><strong onClick={() => { navigator.clipboard.writeText(state.roomCode); onInvite(); }} style={{ cursor: "pointer" }} title="Click to copy code">{state.roomCode}</strong><button type="button" onClick={() => { navigator.clipboard.writeText(state.roomCode); alert("Room Code copied: " + state.roomCode); }} style={{ marginRight: "4px" }}><Copy size={14} /> Copy Code</button><button type="button" onClick={onInvite}><Copy size={14} /> Copy Link</button></div><span className="sync-pill"><span /> Live sync</span></div><div className="phase-banner"><span>ROUND {Math.max(state.currentRound, 1)} / {state.roundsToPlay}</span><strong>{phaseCopy[state.phase] || "Playing"}</strong><i /></div><div className="game-grid"><section className="table-panel">{state.gameType === "chor_sipahi" ? (<><PlayerTable players={state.players} playerId={playerId} publicRoles={state.publicRoles} /><PhasePanel state={state} playerId={playerId} candidates={candidates} isHost={isHost} busy={busy} onAction={onAction} onStart={onStart} /></>) : (<MultiGamePanel state={state} playerId={playerId} busy={busy} onAction={onAction} isHost={isHost} onStart={onStart} />)}</section><aside className="game-side"><ScorePanel ranked={rank} playerId={playerId} /><ChatPanel messages={state.chat} draft={chatDraft} setDraft={setChatDraft} onSubmit={onChat} /></aside></div></main>;
 
