@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, ArrowRight, Check, ChevronRight, Copy, Crown, Eye, LockKeyhole, LogOut, Play, Send, ShieldCheck, Sparkles, Swords, Users, UserRoundCheck } from "lucide-react";
+import { AlertCircle, ArrowRight, Check, ChevronRight, Copy, Crown, Eye, LockKeyhole, LogOut, Play, Send, ShieldCheck, Sparkles, Swords, Volume2, VolumeX, Users, UserRoundCheck } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { readJson } from "@/lib/http";
@@ -9,6 +9,8 @@ import type { ChatItem, GameRole, RajaGameState, RoomSummary } from "@/shared/ty
 import { ThemeToggle } from "./ThemeToggle";
 import { MultiGamePanel } from "./MultiGamePanel";
 import { PrismAnalyticsWidget, FormForgeContactForm } from "./AnalyticsAndFeedback";
+import { getMuteState, setMuteState } from "../utils/audio";
+
 
 
 
@@ -31,6 +33,16 @@ export function RajaMantriApp() {
       document.body.classList.remove("dark");
     }
   }, [dark]);
+  const [muted, setMuted] = useState(false);
+  useEffect(() => {
+    setMuted(getMuteState());
+  }, []);
+
+  const toggleMute = () => {
+    const nextMute = !muted;
+    setMuted(nextMute);
+    setMuteState(nextMute);
+  };
 
   const [roomCode, setRoomCode] = useLocalStorage<string | null>("rmsc-room-code", null);
   const [playerId, setPlayerId] = useLocalStorage<string | null>("rmsc-player-id", null);
@@ -151,9 +163,19 @@ export function RajaMantriApp() {
       </a>
       <div className="nav-center"><span>4 PLAYER CLASSIC</span><i /> <span>PRIVATE ROOMS</span><i /> <span>NO ACCOUNTS</span></div>
       <div className="nav-right" style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+        <button
+          type="button"
+          onClick={toggleMute}
+          className="icon-button"
+          aria-label={muted ? "Unmute Game Audio" : "Mute Game Audio"}
+          title={muted ? "Unmute Sound" : "Mute Sound"}
+        >
+          {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+        </button>
         <ThemeToggle dark={dark} onToggle={() => setDark(!dark)} />
         <a className="rules-link" href="#rules"><ShieldCheck size={15} /> How to play</a>
       </div>
+
     </header>
 
     {state && roomCode && playerId ? <GameRoom state={state} playerId={playerId} busy={busy} onAction={gameAction} onStart={startGame} onInvite={copyInvite} onLeave={leaveRoom} onChat={sendChat} chatDraft={chatDraft} setChatDraft={setChatDraft} /> : <Landing selectedGame={selectedGame} setSelectedGame={setSelectedGame} createName={createName} setCreateName={setCreateName} joinName={joinName} setJoinName={setJoinName} joinCode={joinCode} setJoinCode={setJoinCode} rounds={rounds} setRounds={setRounds} rooms={rooms} busy={busy || !ready} onCreate={createRoom} onJoin={joinRoom} onRoomPick={setJoinCode} onRefresh={loadRooms} />}
