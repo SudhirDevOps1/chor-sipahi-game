@@ -128,7 +128,7 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
 
   if (!gameState) return <div className="phase-card" style={{ textAlign: "center", padding: "3rem" }}>Loading...</div>;
 
-  /* ═══════════════════ 1. TIC-TAC-TOE — EXACT MATCH ═══════════════════ */
+  /* ═══════════════════ 1. TIC-TAC-TOE — ENGLISH ═══════════════════ */
   if (gameType === "tic_tac_toe") {
     const isMyTurn = gameState.currentPlayerId === playerId;
     const p1Score = gameState.player1Score ?? 0;
@@ -166,7 +166,7 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
           textAlign: "center", fontSize: "1.2rem", marginBottom: "20px", color: "#fff",
           minHeight: "35px", fontWeight: "bold", textShadow: "0 2px 4px rgba(0,0,0,0.2)"
         }}>
-          {gameState.winnerId ? `🎉 Player ${gameState.winnerId === state.players[0]?.id ? "X" : "O"} jeet gaya!` : `Player ${gameState.currentPlayerId === state.players[0]?.id ? "X" : "O"} ki baari`}
+          {gameState.winnerId ? `🎉 Player ${gameState.winnerId === state.players[0]?.id ? "X" : "O"} Wins!` : `Player ${gameState.currentPlayerId === state.players[0]?.id ? "X" : "O"}'s Turn`}
         </div>
 
         {/* 3x3 Board Grid */}
@@ -176,7 +176,6 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
             const isWinner = gameState.winningLine?.includes(idx);
             const isX = cell === "X";
 
-            // Standard cell styling based on tic-tac.html rules
             let cellBg = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
             let color = "#fff";
             if (isWinner) {
@@ -205,14 +204,14 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
 
         {/* Controls */}
         <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-          <button className="btn btn-primary" style={{ background: "#fff", color: "#667eea", padding: "12px 24px", borderRadius: "10px", fontWeight: "bold" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>Naya Game</button>
-          <button className="btn btn-secondary" style={{ background: "transparent", border: "2px solid #fff", color: "#fff", padding: "12px 24px", borderRadius: "10px", fontWeight: "bold" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>Score Reset</button>
+          <button className="btn btn-primary" style={{ background: "#fff", color: "#667eea", padding: "12px 24px", borderRadius: "10px", fontWeight: "bold", border: "none" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>New Game</button>
+          <button className="btn btn-secondary" style={{ background: "transparent", border: "2px solid #fff", color: "#fff", padding: "12px 24px", borderRadius: "10px", fontWeight: "bold" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>Reset Score</button>
         </div>
       </div>
     );
   }
 
-  /* ═══════════════════ 2. CONNECT FOUR — EXACT MATCH ═══════════════════ */
+  /* ═══════════════════ 2. CONNECT FOUR — ENGLISH ═══════════════════ */
   if (gameType === "connect_four") {
     const isMyTurn = gameState.currentPlayerId === playerId;
     const p1Score = gameState.player1Score ?? 0;
@@ -248,10 +247,10 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
 
         {/* Turn description */}
         <div style={{ textAlign: "center", fontSize: "1.2rem", marginBottom: "15px", color: "#fff", fontWeight: "bold" }}>
-          {gameState.winnerId ? `🎉 ${gameState.winnerId === state.players[0]?.id ? "🔴 Red" : "🟡 Yellow"} jeet gaya!` : `${gameState.currentPlayerId === state.players[0]?.id ? "🔴 Red" : "🟡 Yellow"} ka turn`}
+          {gameState.winnerId ? `🎉 ${gameState.winnerId === state.players[0]?.id ? "🔴 Red" : "🟡 Yellow"} Wins!` : `${gameState.currentPlayerId === state.players[0]?.id ? "🔴 Red" : "🟡 Yellow"}'s Turn`}
         </div>
 
-        {/* Board grid wrapper (matching connect-for.html exactly) */}
+        {/* Board grid wrapper */}
         <div style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2c5364 100%)", padding: "12px", borderRadius: "15px", marginBottom: "20px", boxShadow: "inset 0 4px 10px rgba(0, 0, 0, 0.3)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gridTemplateRows: "repeat(6, 1fr)", gap: "6px", aspectRatio: "7/6" }}>
             {gameState.board.map((row: (string | null)[], rIdx: number) => (
@@ -284,14 +283,14 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
 
         {/* Controls */}
         <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-          <button className="btn btn-primary" style={{ background: "#fff", color: "#2c5364", padding: "12px 24px", borderRadius: "10px", fontWeight: "bold", border: "none" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>Naya Game</button>
-          <button className="btn btn-secondary" style={{ background: "transparent", border: "2px solid #fff", color: "#fff", padding: "12px 24px", borderRadius: "10px", fontWeight: "bold" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>Score Reset</button>
+          <button className="btn btn-primary" style={{ background: "#fff", color: "#2c5364", padding: "12px 24px", borderRadius: "10px", fontWeight: "bold", border: "none" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>New Game</button>
+          <button className="btn btn-secondary" style={{ background: "transparent", border: "2px solid #fff", color: "#fff", padding: "12px 24px", borderRadius: "10px", fontWeight: "bold" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>Reset Score</button>
         </div>
       </div>
     );
   }
 
-  /* ═══════════════════ 3. ROCK PAPER SCISSORS — EXACT MATCH ═══════════════════ */
+  /* ═══════════════════ 3. ROCK PAPER SCISSORS — ENGLISH ═══════════════════ */
   if (gameType === "rps") {
     const p1 = gameState.player1Id === playerId;
     const myChoice = p1 ? gameState.player1Choice : gameState.player2Choice;
@@ -319,7 +318,7 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
         {/* Score board */}
         <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "30px", padding: "20px", background: "linear-gradient(135deg, #fff5f7 0%, #fffef5 100%)", borderRadius: "15px" }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "1px" }}>Aap</div>
+            <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "1px" }}>You</div>
             <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#fa709a" }}>{p1 ? p1Score : p2Score}</div>
           </div>
           <div style={{ textAlign: "center" }}>
@@ -327,7 +326,7 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
             <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#999" }}>{draws}</div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "1px" }}>Computer</div>
+            <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "1px" }}>Opponent</div>
             <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#f59e0b" }}>{p1 ? p2Score : p1Score}</div>
           </div>
         </div>
@@ -335,7 +334,7 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
         {/* Battle Arena */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "20px", marginBottom: "25px", padding: "20px", background: "#f8f9fa", borderRadius: "15px", minHeight: "150px" }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.9rem", fontWeight: 600, color: "#666", marginBottom: "10px" }}>AAP</div>
+            <div style={{ fontSize: "0.9rem", fontWeight: 600, color: "#666", marginBottom: "10px" }}>YOU</div>
             <div className={`fighter-icon ${diceAnimating ? "shake" : ""}`} style={{ fontSize: "4rem", minHeight: "80px", display: "flex", alignItems: "center", justifyContent: "center" }}>
               {myIcon}
             </div>
@@ -349,23 +348,23 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
           </div>
         </div>
 
-        {/* Dynamic Hindi message text */}
+        {/* Dynamic English status text */}
         {(() => {
-          let resultText = "Apna chunav karein!";
+          let resultText = "Make your choice!";
           let resultClass = "";
           if (showResults) {
-            const c1 = myChoice === "rock" ? "Patthar" : myChoice === "paper" ? "Kagaz" : "Kainchi";
-            const c2 = opponentChoice === "rock" ? "Patthar" : opponentChoice === "paper" ? "Kagaz" : "Kainchi";
+            const c1 = myChoice === "rock" ? "Rock" : myChoice === "paper" ? "Paper" : "Scissors";
+            const c2 = opponentChoice === "rock" ? "Rock" : opponentChoice === "paper" ? "Paper" : "Scissors";
             const win = gameState.roundWinnerId === playerId;
             const draw = gameState.roundWinnerId === "draw";
             if (win) {
-              resultText = `🎉 Aap jeet gaye! ${c1} beats ${c2}`;
+              resultText = `🎉 You Win! ${c1} beats ${c2}`;
               resultClass = "win";
             } else if (draw) {
-              resultText = `🤝 Draw! Dono ne ${c1} chuna`;
+              resultText = `🤝 Draw! Both chose ${c1}`;
               resultClass = "draw";
             } else {
-              resultText = `😢 Aap haar gaye! ${c2} beats ${c1}`;
+              resultText = `😢 You Lose! ${c2} beats ${c1}`;
               resultClass = "lose";
             }
           }
@@ -381,28 +380,28 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "20px" }}>
             <button className="choice-btn" onClick={() => handleAction({ type: "make_choice", choice: "rock" })} disabled={busy}
               style={{ background: "#fff", border: "3px solid transparent", borderRadius: "15px", padding: "20px 10px", cursor: "pointer", fontSize: "3rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", boxShadow: "0 4px 15px rgba(0,0,0,0.08)" }}>
-              <span>✊</span><span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#666" }}>Patthar</span>
+              <span>✊</span><span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#666" }}>Rock</span>
             </button>
             <button className="choice-btn" onClick={() => handleAction({ type: "make_choice", choice: "paper" })} disabled={busy}
               style={{ background: "#fff", border: "3px solid transparent", borderRadius: "15px", padding: "20px 10px", cursor: "pointer", fontSize: "3rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", boxShadow: "0 4px 15px rgba(0,0,0,0.08)" }}>
-              <span>✋</span><span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#666" }}>Kagaz</span>
+              <span>✋</span><span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#666" }}>Paper</span>
             </button>
             <button className="choice-btn" onClick={() => handleAction({ type: "make_choice", choice: "scissors" })} disabled={busy}
               style={{ background: "#fff", border: "3px solid transparent", borderRadius: "15px", padding: "20px 10px", cursor: "pointer", fontSize: "3rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", boxShadow: "0 4px 15px rgba(0,0,0,0.08)" }}>
-              <span>✌️</span><span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#666" }}>Kainchi</span>
+              <span>✌️</span><span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#666" }}>Scissors</span>
             </button>
           </div>
         )}
 
         <button className="btn-reset" onClick={() => handleAction({ type: "restart" })} disabled={busy}
           style={{ width: "100%", padding: "12px", background: "#fff", color: "#fa709a", borderRadius: "12px", fontSize: "1rem", fontWeight: "bold", border: "none", cursor: "pointer", textTransform: "uppercase" }}>
-          Score Reset
+          Reset Score
         </button>
       </div>
     );
   }
 
-  /* ═══════════════════ 4. LUDO — EXACT MATCH ═══════════════════ */
+  /* ═══════════════════ 4. LUDO — ENGLISH ═══════════════════ */
   if (gameType === "ludo") {
     const isMyTurn = gameState.currentPlayerId === playerId;
     const colors = ["red", "green", "yellow", "blue"];
@@ -425,7 +424,7 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
               width: "20px", height: "20px", borderRadius: "50%",
               background: activeColor === "red" ? "#c92a2a" : activeColor === "green" ? "#2b8a3e" : activeColor === "yellow" ? "#e67700" : "#1864ab"
             }} />
-            <span>{activeColor.charAt(0).toUpperCase() + activeColor.slice(1)} ka turn</span>
+            <span>{activeColor.charAt(0).toUpperCase() + activeColor.slice(1)}'s Turn</span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -448,7 +447,6 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
               const col = c;
 
               // Color bases
-              let cellClass = "";
               let bg = "#fff";
               if (row < 6 && col < 6) bg = "#ff6b6b";
               else if (row < 6 && col > 8) bg = "#51cf66";
@@ -484,7 +482,6 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
                 const pColor = colors[pIdx % 4];
                 pt.forEach((stepPos: number, tIdx: number) => {
                   if (stepPos >= 0 && stepPos <= 30) {
-                    // Map step to [row, col]
                     let targetCoords = null;
                     if (stepPos >= 0 && stepPos < 24) {
                       const perimeterIndex = (LUDO_START_POS[pIdx % 4] + stepPos) % 52;
@@ -539,7 +536,7 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
 
         {/* Controls */}
         <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-          <button className="btn btn-reset" style={{ background: "#fff", color: "#185a9d", padding: "10px 20px", borderRadius: "8px", fontWeight: "bold", border: "none" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>Naya Game</button>
+          <button className="btn btn-reset" style={{ background: "#fff", color: "#185a9d", padding: "10px 20px", borderRadius: "8px", fontWeight: "bold", border: "none" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>New Game</button>
         </div>
       </div>
     );
