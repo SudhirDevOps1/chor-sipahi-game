@@ -299,6 +299,16 @@ function Landing({ selectedGame, setSelectedGame, createName, setCreateName, joi
                 <option value="tic_tac_toe">❌⭕ Tic-Tac-Toe (2 Players)</option>
                 <option value="rps">✊✌️ Rock Paper Scissors (2 Players)</option>
                 <option value="connect_four">🔴 Connect Four (2 Players)</option>
+                <option value="battleship">🚢 Battleship (2 Players)</option>
+                <option value="callbreak">♠️ Call Break (4 Players)</option>
+                <option value="chess">♟️ Chess (2 Players)</option>
+                <option value="jhandimunda">🎲 Jhandi Munda (2-4 Players)</option>
+                <option value="memory">🃏 Memory Match (2 Players)</option>
+                <option value="othello">⚪ Othello (2 Players)</option>
+                <option value="snakesladders">🐍 Snakes & Ladders (2 Players)</option>
+                <option value="teenpatti">🎴 Teen Patti (2-4 Players)</option>
+                <option value="uno">🌈 Uno Cards (2-4 Players)</option>
+                <option value="wordlink">🔠 Word Link (2 Players)</option>
               </select>
             </label>
             <label>

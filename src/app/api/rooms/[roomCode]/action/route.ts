@@ -47,6 +47,8 @@ export async function POST(request: Request, context: Context) {
           nextState = handleConnectFourAction(state, action, actor.id, roster);
         } else if (room.gameType === "ludo") {
           nextState = handleLudoAction(state, action, actor.id, roster);
+        } else {
+          nextState = { ...state, ...(action.payloadState || {}), lastAction: action.type, lastActorId: actor.id };
         }
       } catch (err: any) {
         return Response.json({ error: err.message || "Invalid move" }, { status: 400, headers: privacyHeaders() });

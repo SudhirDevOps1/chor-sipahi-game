@@ -1,7 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import type { RajaGameState } from "@/shared/types";
 import { playClickSound, playDiceRollSound, playMoveSound, playWinSound } from "../utils/audio";
-
+import Battleship from "./Battleship";
+import CallBreak from "./CallBreak";
+import Chess from "./Chess";
+import JhandiMunda from "./JhandiMunda";
+import Memory from "./Memory";
+import Othello from "./Othello";
+import SnakesLadders from "./SnakesLadders";
+import TeenPatti from "./TeenPatti";
+import Uno from "./Uno";
+import WordLink from "./WordLink";
 interface MultiGamePanelProps {
   state: RajaGameState;
   playerId: string;
@@ -541,6 +550,17 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
       </div>
     );
   }
+
+  if (gameType === "battleship") return <Battleship onBack={() => {}} />;
+  if (gameType === "callbreak") return <CallBreak onBack={() => {}} />;
+  if (gameType === "chess") return <Chess onBack={() => {}} />;
+  if (gameType === "jhandimunda") return <JhandiMunda onBack={() => {}} />;
+  if (gameType === "memory") return <Memory onBack={() => {}} />;
+  if (gameType === "othello") return <Othello onBack={() => {}} />;
+  if (gameType === "snakesladders") return <SnakesLadders onBack={() => {}} />;
+  if (gameType === "teenpatti") return <TeenPatti onBack={() => {}} />;
+  if (gameType === "uno") return <Uno onBack={() => {}} />;
+  if (gameType === "wordlink") return <WordLink onBack={() => {}} />;
 
   return <div className="phase-card">Unsupported game type</div>;
 }
