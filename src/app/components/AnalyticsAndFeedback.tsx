@@ -7,7 +7,7 @@ export function PrismAnalyticsWidget() {
   const [totalViews, setTotalViews] = useState<number>(0);
 
   useEffect(() => {
-    const url = "https://prismanalytics.sudhirdevops1.workers.dev/api/widget?siteId=pa_a855e546a1c7483dbf30";
+    const url = "https://prismanalytics.sudhirdevops1.workers.dev/api/widget?siteId=pa_27f027575524440ead39";
     function update() {
       fetch(url)
         .then((res) => res.json())
