@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="20" fill="#172748" />
+  <!-- Crown Icon in Gold -->
+  <path d="M25 65 L20 35 L40 45 L50 25 L60 45 L80 35 L75 65 Z" fill="#e5b343" stroke="#fff" stroke-width="3" stroke-linejoin="round" />
+  <!-- Crown circles -->
+  <circle cx="20" cy="35" r="3" fill="#fff" />
+  <circle cx="50" cy="25" r="3" fill="#fff" />
+  <circle cx="80" cy="35" r="3" fill="#fff" />
+  <!-- Seal base line -->
+  <line x1="25" y1="72" x2="75" y2="72" stroke="#e5b343" stroke-width="4" stroke-linecap="round" />
+</svg>

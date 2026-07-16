@@ -7,3 +7,93 @@
 @media(max-width:900px){.landing{grid-template-columns:1fr;gap:25px;padding-top:62px}.intro{max-width:650px}.paper-stack{max-width:430px;justify-self:end;width:100%}.lobby-area{grid-template-columns:1fr}.game-grid{grid-template-columns:1fr}.game-side{display:grid;grid-template-columns:1fr 1fr}.chat-panel{min-height:0}.room-mini-list{grid-template-columns:1fr 1fr}.rules-grid{grid-template-columns:repeat(2,1fr)}.rules-grid article:nth-child(2){border-right:0}.rules-grid article:nth-child(-n+2){border-bottom:1px solid var(--ink)}}
 @media(max-width:620px){.heritage-nav{height:64px;padding:0 17px}.nav-center,.rules-link{display:none}.landing,.lobby-area,.rules-section,.game-page{padding-left:18px;padding-right:18px}.landing{padding-top:48px}.intro h1{font-size:48px}.intro-copy{font-size:13px}.paper-stack{height:280px;transform:scale(.82);transform-origin:right top;margin-bottom:-35px}.paper-main{right:31px}.lobby-area{padding-bottom:56px}.lobby-form{grid-template-columns:1fr}.lobby-card{padding:18px}.room-mini-list{grid-template-columns:1fr}.empty-rooms{padding:14px;flex-wrap:wrap;text-align:center}.rules-section{padding-top:42px}.rules-grid{grid-template-columns:1fr}.rules-grid article{min-height:0;border-right:0;border-bottom:1px solid var(--ink)}.rules-grid article:last-child{border-bottom:0}.game-page{padding-top:18px}.room-code-toolbar span{display:none}.sync-pill{display:none}.phase-banner{align-items:flex-start;flex-direction:column;gap:3px;padding:10px 12px}.phase-banner span{border:0;padding:0}.phase-banner i{position:absolute;right:17px;margin-top:9px}.game-grid{margin-top:15px}.player-table{height:386px}.seat{min-width:122px;padding:6px}.seat-1{top:20px}.seat-2{right:10px}.seat-3{bottom:20px}.seat-4{left:10px}.seat strong{max-width:65px}.table-center{width:80px;height:80px}.table-center span{font-size:11px}.phase-card{margin-top:21px;padding:23px 18px;box-shadow:4px 4px 0 var(--ink)}.phase-card>h1{font-size:30px}.secret-role h1{font-size:37px}.suspect-list{grid-template-columns:1fr}.reveal-roles{grid-template-columns:1fr 1fr}.reveal-roles div:nth-child(2){border-right:0}.reveal-roles div:nth-child(-n+2){border-bottom:1px solid var(--ink)}.game-side{display:flex}.notice{left:14px;right:14px;bottom:14px;max-width:none}.room-code-toolbar strong{font-size:15px}.leave-button{font-size:0}.leave-button svg{width:18px;height:18px}.game-toolbar{margin-bottom:13px}.heritage-button{width:100%}}
 @media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+/* Professional Footer Styles */
+.heritage-footer {
+  border-top: 2px solid var(--ink);
+  padding: 3rem 1.5rem;
+  margin-top: 4rem;
+  text-align: center;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+.footer-content {
+  max-width: 1130px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.footer-links {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+.footer-repo-link {
+  color: var(--saffron);
+  text-decoration: none;
+  font-weight: 800;
+  transition: color 0.2s ease;
+}
+.footer-repo-link:hover {
+  color: var(--saffron-dark);
+  text-decoration: underline;
+}
+
+/* Dark Mode Theme Variables */
+body.dark {
+  --paper: #0b0f19;
+  --paper-deep: #161f30;
+  --paper-light: #111827;
+  --ink: #f9fafb;
+  --ink-soft: #9ca3af;
+  --line: #374151;
+  background: radial-gradient(circle at 10% 4%, #1f2937 0, transparent 26rem), #0b0f19;
+}
+
+body.dark .heritage-app {
+  background-image: linear-gradient(rgba(249, 250, 251, 0.02) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(249, 250, 251, 0.015) 1px, transparent 1px);
+}
+
+body.dark .paper-main {
+  background: #111827;
+}
+
+body.dark .paper-back {
+  background: #1e3a8a;
+}
+
+body.dark .lobby-form input,
+body.dark .lobby-form select,
+body.dark .room-mini-list button,
+body.dark .chat-panel input {
+  background: #1f2937;
+  color: #f9fafb;
+}
+
+body.dark .empty-rooms {
+  border-color: rgba(249, 250, 251, 0.25);
+}
+
+/* Theme Toggle Button Styling */
+.icon-button {
+  background: transparent;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.icon-button:hover {
+  background-color: var(--paper-deep);
+  color: var(--saffron);
+  border-color: var(--saffron);
+}
+

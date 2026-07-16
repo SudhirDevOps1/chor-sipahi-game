@@ -6,6 +6,8 @@ import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { readJson } from "@/lib/http";
 import { ROLE_DETAILS } from "@/lib/raja-game";
 import type { ChatItem, GameRole, RajaGameState, RoomSummary } from "@/shared/types";
+import { ThemeToggle } from "./ThemeToggle";
+
 
 const AVATARS = ["✦", "◆", "●", "▲"];
 
@@ -16,6 +18,15 @@ function createSeed() { return `${crypto.randomUUID()}-${Math.random().toString(
 
 export function RajaMantriApp() {
   const [seed, setSeed, seedReady] = useLocalStorage("rmsc-device-seed", "");
+  const [dark, setDark] = useLocalStorage("rmsc-dark-mode", false);
+  useEffect(() => {
+    if (dark) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [dark]);
+
   const [roomCode, setRoomCode] = useLocalStorage<string | null>("rmsc-room-code", null);
   const [playerId, setPlayerId] = useLocalStorage<string | null>("rmsc-player-id", null);
   const [displayName, setDisplayName] = useLocalStorage("rmsc-display-name", "");
@@ -126,9 +137,34 @@ export function RajaMantriApp() {
   function leaveRoom() { setRoomCode(null); setPlayerId(null); setState(null); setNotice(null); void loadRooms(); }
 
   return <div className="heritage-app">
-    <header className="heritage-nav"><a className="heritage-brand" href="/"><span className="brand-seal">R</span><span><strong>RAJA MANTRI</strong><small>CHOR SIPAHI</small></span></a><div className="nav-center"><span>4 PLAYER CLASSIC</span><i /> <span>PRIVATE ROOMS</span><i /> <span>NO ACCOUNTS</span></div><a className="rules-link" href="#rules"><ShieldCheck size={15} /> How to play</a></header>
+    <header className="heritage-nav">
+      <a className="heritage-brand" href="/">
+        <span className="brand-seal">R</span>
+        <span><strong>RAJA MANTRI</strong><small>CHOR SIPAHI</small></span>
+      </a>
+      <div className="nav-center"><span>4 PLAYER CLASSIC</span><i /> <span>PRIVATE ROOMS</span><i /> <span>NO ACCOUNTS</span></div>
+      <div className="nav-right" style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+        <ThemeToggle dark={dark} onToggle={() => setDark(!dark)} />
+        <a className="rules-link" href="#rules"><ShieldCheck size={15} /> How to play</a>
+      </div>
+    </header>
+
     {state && roomCode && playerId ? <GameRoom state={state} playerId={playerId} busy={busy} onAction={gameAction} onStart={startGame} onInvite={copyInvite} onLeave={leaveRoom} onChat={sendChat} chatDraft={chatDraft} setChatDraft={setChatDraft} /> : <Landing createName={createName} setCreateName={setCreateName} joinName={joinName} setJoinName={setJoinName} joinCode={joinCode} setJoinCode={setJoinCode} rounds={rounds} setRounds={setRounds} rooms={rooms} busy={busy || !ready} onCreate={createRoom} onJoin={joinRoom} onRoomPick={setJoinCode} onRefresh={loadRooms} />}
     <section className="rules-section" id="rules"><p className="section-kicker">THE CLASSIC RULES</p><h2>Four slips. One sharp guess.</h2><div className="rules-grid"><Rule n="01" icon="👑" title="Roles are dealt" text="Exactly four players receive a secret Raja, Mantri, Chor or Sipahi card." /><Rule n="02" icon="🗡️" title="Mantri steps forward" text="Raja calls for the Mantri. The Mantri reveals and prepares to identify Chor." /><Rule n="03" icon="🕵️" title="Make the guess" text="The Mantri picks one of the two hidden players as Chor. Sipahi stays silent." /><Rule n="04" icon="✦" title="Count the points" text="Raja gets 1000, Sipahi 500; Mantri gets 800 on a correct guess, otherwise Chor takes 800." /></div></section>
+    <footer className="heritage-footer">
+      <div className="footer-content">
+        <p>© 2026 <strong>SudhirDevOps1</strong>. All Rights Reserved.</p>
+
+        <div className="footer-links">
+          <a href="https://github.com/SudhirDevOps1/chor-sipahi-game" target="_blank" rel="noopener noreferrer" className="footer-repo-link">
+            GitHub Repository
+          </a>
+          <span>·</span>
+          <span>Open Source (MIT)</span>
+        </div>
+      </div>
+    </footer>
+
     {notice && <div className="notice" role="status"><AlertCircle size={16} /><span>{notice}</span><button type="button" onClick={() => setNotice(null)}>×</button></div>}
   </div>;
 }

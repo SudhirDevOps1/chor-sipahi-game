@@ -1,4 +1,7 @@
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+
 const FALLBACK_SALT = "chor-sipahi-local-privacy-salt";
+
 
 function sha256(ascii: string): string {
   function rightRotate(value: number, amount: number) {
@@ -82,10 +85,22 @@ function sha256(ascii: string): string {
   return result;
 }
 
+export function getDeviceSalt(): string {
+  try {
+    const context = getCloudflareContext();
+    const envSalt = (context?.env as any)?.DEVICE_ID_SALT;
+    if (envSalt) return envSalt;
+  } catch {
+    // getCloudflareContext may throw outside request handlers
+  }
+  return process.env.DEVICE_ID_SALT || FALLBACK_SALT;
+}
+
 export function hashDeviceSeed(seed: string): string {
-  const salt = process.env.DEVICE_ID_SALT || FALLBACK_SALT;
+  const salt = getDeviceSalt();
   return sha256(`${salt}:${seed}`);
 }
+
 
 export function createGuestSeed(): string {
   const bytes = new Uint8Array(24);
