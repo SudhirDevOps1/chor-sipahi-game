@@ -7,7 +7,7 @@ export function PrismAnalyticsWidget() {
   const [totalViews, setTotalViews] = useState<number>(0);
 
   useEffect(() => {
-    const url = "https://prismanalytics.sudhirdevops1.workers.dev/api/widget?siteId=pa_27f027575524440ead39";
+    const url = "https://prismanalytics.sudhirdevops1.workers.dev/api/widget?siteId=pa_5eef70cd98b2492184e7";
     function update() {
       fetch(url)
         .then((res) => res.json())
@@ -85,7 +85,7 @@ export function PrismAnalyticsWidget() {
   );
 }
 
-export function FormForgeFeedbackForm() {
+export function FormForgeContactForm() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -106,7 +106,7 @@ export function FormForgeFeedbackForm() {
         throw new Error("Submission failed");
       }
     } catch (err) {
-      setError("Failed to submit feedback. Please try again.");
+      setError("Failed to send message. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -114,9 +114,9 @@ export function FormForgeFeedbackForm() {
 
   if (submitted) {
     return (
-      <div className="ff-feedback" style={{ textAlign: "center", padding: "3rem 2rem" }}>
-        <h3 style={{ color: "#10b981", fontSize: "1.75rem", marginBottom: "0.5rem" }}>✓ Thank You!</h3>
-        <p style={{ margin: 0, color: "#94a3b8" }}>Your feedback has been successfully submitted. We appreciate your support! 🌟</p>
+      <div className="max-w-md mx-auto p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl text-center">
+        <h3 className="text-emerald-400 text-xl font-bold mb-2">✓ Message Sent</h3>
+        <p className="text-slate-400 text-sm">Thank you! Your message has been successfully received. We will get back to you soon. ✉️</p>
       </div>
     );
   }
@@ -124,28 +124,24 @@ export function FormForgeFeedbackForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="ff-feedback"
+      className="max-w-md mx-auto p-6 bg-slate-900 border border-slate-800 rounded-2xl space-y-4 shadow-xl text-left"
     >
-      <h3>Share Your Feedback</h3>
-      <p>We value your opinion. Help us improve!</p>
-      <label htmlFor="ff-name">Your Name</label>
-      <input id="ff-name" name="name" type="text" required placeholder="Enter your name" disabled={submitting} />
-      <label htmlFor="ff-email">Email</label>
-      <input id="ff-email" name="email" type="email" required placeholder="you@example.com" disabled={submitting} />
-      <label>Rating</label>
-      <div className="ff-stars" style={{ display: "flex", gap: "0.375rem", direction: "rtl", justifyContent: "flex-end", marginBottom: "1rem" }}>
-        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="5" style={{ display: "none" }} disabled={submitting} /></label>
-        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="4" style={{ display: "none" }} disabled={submitting} /></label>
-        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="3" style={{ display: "none" }} disabled={submitting} /></label>
-        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="2" style={{ display: "none" }} disabled={submitting} /></label>
-        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="1" style={{ display: "none" }} disabled={submitting} /></label>
+      <h3 className="text-lg font-bold text-white mb-1">Contact Us</h3>
+      <p className="text-xs text-slate-400 mb-4">Have questions? Send us a message directly!</p>
+      <div>
+        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Email</label>
+        <input name="email" type="email" required placeholder="Enter email" disabled={submitting} className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition" />
       </div>
-      <label htmlFor="ff-msg">Your Feedback</label>
-      <textarea id="ff-msg" name="message" rows={4} required placeholder="Tell us what you think..." disabled={submitting}></textarea>
+      <div>
+        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Message</label>
+        <textarea name="message" required placeholder="Type your message here..." rows={4} disabled={submitting} className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition"></textarea>
+      </div>
       {/* Honeypot Bot Trap */}
       <input name="website" tabIndex={-1} autoComplete="off" style={{ display: "none" }} />
-      {error && <p style={{ color: "#ef4444", fontSize: "0.875rem", margin: "0 0 1rem" }}>{error}</p>}
-      <button type="submit" disabled={submitting}>{submitting ? "Submitting..." : "Submit Feedback"}</button>
+      {error && <p className="text-red-500 text-xs">{error}</p>}
+      <button type="submit" disabled={submitting} className="w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl hover:from-cyan-400 hover:to-blue-500 transition-all">
+        {submitting ? "Sending..." : "Send Message"}
+      </button>
     </form>
   );
 }
