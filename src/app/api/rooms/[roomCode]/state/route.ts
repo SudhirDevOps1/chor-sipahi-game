@@ -45,7 +45,8 @@ export async function GET(request: Request, context: Context) {
       rolesSeenCount: assignments.filter((assignment) => assignment.hasSeenRole).length,
       publicRoles,
       result: round && (room.phase === "round_result" || room.phase === "game_over") ? { mantriGuessPlayerId: round.mantriGuessPlayerId, isGuessCorrect: round.isGuessCorrect, awards } : null,
-      chat: messages.reverse().map((message) => ({ id: String(message.id), playerId: message.playerId, playerName: message.playerName, message: message.message, scope: message.scope, createdAt: message.createdAt.toISOString() })),
+      chat: messages.reverse().map((message) => ({ id: String(message.id), playerId: message.playerId, playerName: message.playerName, message: message.message, scope: message.scope, createdAt: new Date(message.createdAt).toISOString() })),
+
     }, { headers: privacyHeaders() });
   } catch {
     return Response.json({ error: "Could not load room state" }, { status: 400, headers: privacyHeaders() });

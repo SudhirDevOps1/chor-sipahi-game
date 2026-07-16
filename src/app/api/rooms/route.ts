@@ -18,7 +18,8 @@ export async function GET() {
 
     const summaries = await Promise.all(rooms.filter((room) => !room.isPrivate).map(async (room) => {
       const roster = await db.select({ id: players.id }).from(players).where(eq(players.roomCode, room.roomCode));
-      return { roomCode: room.roomCode, roundsToPlay: room.roundsToPlay, playersCount: roster.length, maxPlayers: 4, createdAt: room.createdAt.toISOString(), status: room.gameStatus };
+      return { roomCode: room.roomCode, roundsToPlay: room.roundsToPlay, playersCount: roster.length, maxPlayers: 4, createdAt: new Date(room.createdAt).toISOString(), status: room.gameStatus };
+
     }));
     return Response.json({ rooms: summaries }, { headers: privacyHeaders() });
   } catch {

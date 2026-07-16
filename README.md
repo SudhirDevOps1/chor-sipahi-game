@@ -78,30 +78,52 @@ npx wrangler dev
 
 ---
 
-## 🚀 Deploying to Cloudflare
+## 🚀 How to Deploy on Your Own Cloudflare Account
 
-### 1. Database Creation
-If you haven't created the D1 database yet, create it using Wrangler:
+Anyone can clone this repository and deploy it to their own Cloudflare account in 5 simple steps:
+
+### Step 1: Login to Cloudflare
+Make sure you are logged in to your Cloudflare account via Wrangler CLI:
+```bash
+npx wrangler login
+```
+
+### Step 2: Create a D1 Database
+Create a new serverless SQLite D1 database on your account:
 ```bash
 npx wrangler d1 create chor-sipahi-db
 ```
-Copy the generated `database_id` and update it in [**wrangler.jsonc**](file:///c:/Users/DELL/Desktop/forme%20forge%20investigation/chorsipahi-online-game-development/wrangler.jsonc):
+Cloudflare will print the database configuration details.
+
+### Step 3: Configure Database ID
+Open [**wrangler.jsonc**](file:///c:/Users/DELL/Desktop/forme%20forge%20investigation/chorsipahi-online-game-development/wrangler.jsonc) and update the `database_id` under the `d1_databases` array with the ID generated in Step 2:
 ```json
-      "database_id": "YOUR_DATABASE_ID"
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "chor-sipahi-db",
+      "database_id": "YOUR-NEW-D1-DATABASE-ID-HERE",
+      "migrations_dir": "drizzle/migrations"
+    }
+  ]
 ```
 
-### 2. Run Database Migrations on Remote
-Push the schema to your live D1 database in Cloudflare:
+### Step 4: Apply Database Migrations
+Create the tables in your live Cloudflare D1 database:
 ```bash
 npx wrangler d1 migrations apply chor-sipahi-db --remote
 ```
 
-### 3. Compile and Deploy App
-Build and deploy the application:
-```bash
-npm run build
-npx wrangler deploy
-```
+### Step 5: Push and Deploy
+You can deploy directly or hook it up to Cloudflare Workers Builds CI/CD:
+* **Option A: Auto-deploy via GitHub (Recommended)**
+  Connect your GitHub repository to Cloudflare Workers & Pages dashboard. Whenever you `git push` to `main`, Cloudflare will build (Turbopack) and deploy it automatically.
+* **Option B: Deploy directly from terminal**
+  *(Recommended to run on Linux/macOS or WSL to avoid Windows file locks)*:
+  ```bash
+  npm run build
+  npx wrangler deploy
+  ```
 
 ---
 
