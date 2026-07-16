@@ -22,6 +22,8 @@ function copyFolderSync(from, to) {
 if (process.env.IN_OPEN_NEXT === 'true') {
   console.log("--- Inside OpenNext: Running standard Next.js build ---");
   execSync('next build', { stdio: 'inherit' });
+
+
 } else {
   console.log("--- Starting OpenNext Cloudflare Build wrapper ---");
   // Set environment variable to break recursive loops

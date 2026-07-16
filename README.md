@@ -132,7 +132,19 @@ Set the following variables in the Cloudflare Pages/Workers environment variable
 
 ---
 
+## 📈 Database Capacity & Free Tier Limits (Cloudflare D1)
+
+Cloudflare D1 Free Tier allows **100,000 writes per day** and **5 GB database storage**. Here is the daily usage calculation for your game:
+
+* **1 Single Game Round Usage**: A single round of gameplay (Room Creation + Joining + Starting + Actions + Chat) writes around **10 to 15 rows** in the database.
+* **Daily Games Limit (Free Tier)**: With **100,000 free writes daily**, you can play approximately **1,500 to 2,000 full matches every single day** for free! (Roughly 6,000 players active daily).
+* **Storage Capacity (5 GB)**: A single game row takes only ~150 bytes. 5 GB can easily store **over 3,000,000 completed games**!
+* **What happens when full?** You can run cleanup migrations regularly, but practically, the database will never fill up even with thousands of daily matches.
+
+---
+
 ## 🕒 Version History & Changelog
+
 
 ### **v2.0.0 (Current Edition - OpenNext & D1 migration)**
 * **Adapter Shift**: Migrated project from Cloudflare Pages native build configuration to `@opennextjs/cloudflare` (OpenNext adapter).
