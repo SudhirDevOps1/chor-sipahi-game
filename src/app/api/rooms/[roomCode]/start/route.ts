@@ -24,8 +24,15 @@ export async function POST(request: Request, context: Context) {
     if (room.hostDeviceId !== deviceId) return Response.json({ error: "Only the host can start the game" }, { status: 403, headers: privacyHeaders() });
     if (room.gameStatus !== "waiting") return Response.json({ error: "Game is already active" }, { status: 409, headers: privacyHeaders() });
     const roster = (await db.select().from(players).where(eq(players.roomCode, roomCode))) as any[];
-    const limit = ["tic_tac_toe", "rps", "connect_four"].includes(room.gameType) ? 2 : 4;
-    if (roster.length !== limit) return Response.json({ error: `Exactly ${limit} players are needed. ${roster.length}/${limit} joined.` }, { status: 409, headers: privacyHeaders() });
+    if (room.gameType === "ludo") {
+      if (roster.length < 2 || roster.length > 4) {
+        return Response.json({ error: `Ludo requires 2 to 4 players. Current: ${roster.length}` }, { status: 409, headers: privacyHeaders() });
+      }
+    } else {
+      const limit = ["tic_tac_toe", "rps", "connect_four"].includes(room.gameType) ? 2 : 4;
+      if (roster.length !== limit) return Response.json({ error: `Exactly ${limit} players are needed. ${roster.length}/${limit} joined.` }, { status: 409, headers: privacyHeaders() });
+    }
+
 
     if (room.gameType === "chor_sipahi") {
       const assignments = assignRoles(roster.map((player) => player.id));

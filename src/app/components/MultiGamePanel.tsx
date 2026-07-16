@@ -16,21 +16,25 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
 
   // LOBBY STATE
   if (state.status === "waiting") {
-    const limit = ["tic_tac_toe", "rps", "connect_four"].includes(gameType) ? 2 : 4;
+    const isLudo = gameType === "ludo";
+    const minPlayers = isLudo ? 2 : (["tic_tac_toe", "rps", "connect_four"].includes(gameType) ? 2 : 4);
+    const maxPlayers = isLudo ? 4 : minPlayers;
+    const canStart = isLudo ? (state.players.length >= 2 && state.players.length <= 4) : (state.players.length === minPlayers);
+
     return (
       <div className="phase-card">
         <p className="eyebrow">🎮 LOBBY</p>
         <h1>Waiting for players</h1>
-        <p>This game requires exactly {limit} players to start.</p>
+        <p>{isLudo ? "This game requires 2 to 4 players to start." : `This game requires exactly ${minPlayers} players to start.`}</p>
         <div className="ready-count">
-          <span>{state.players.length} / {limit}</span>
+          <span>{state.players.length} {isLudo ? "" : `/ ${minPlayers}`}</span>
           <small>players joined</small>
         </div>
         {isHost ? (
           <button
             type="button"
             className="heritage-button"
-            disabled={busy || state.players.length !== limit}
+            disabled={busy || !canStart}
             onClick={onStart}
           >
             Start Game
@@ -41,6 +45,7 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
       </div>
     );
   }
+
 
   // GAME OVER STATE
   if (state.status === "finished") {

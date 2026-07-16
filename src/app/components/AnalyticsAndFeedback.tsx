@@ -86,31 +86,66 @@ export function PrismAnalyticsWidget() {
 }
 
 export function FormForgeFeedbackForm() {
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const res = await fetch("https://apnaform.sudhirdevops1.workers.dev/api/submit/endpoint_hSQ8pIPJWdphv4LunoqB4XgG", {
+        method: "POST",
+        body: formData,
+      });
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        throw new Error("Submission failed");
+      }
+    } catch (err) {
+      setError("Failed to submit feedback. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (submitted) {
+    return (
+      <div className="ff-feedback" style={{ textAlign: "center", padding: "3rem 2rem" }}>
+        <h3 style={{ color: "#10b981", fontSize: "1.75rem", marginBottom: "0.5rem" }}>✓ Thank You!</h3>
+        <p style={{ margin: 0, color: "#94a3b8" }}>Your feedback has been successfully submitted. We appreciate your support! 🌟</p>
+      </div>
+    );
+  }
+
   return (
     <form
-      method="POST"
-      action="https://apnaform.sudhirdevops1.workers.dev/api/submit/endpoint_hSQ8pIPJWdphv4LunoqB4XgG"
+      onSubmit={handleSubmit}
       className="ff-feedback"
     >
       <h3>Share Your Feedback</h3>
       <p>We value your opinion. Help us improve!</p>
       <label htmlFor="ff-name">Your Name</label>
-      <input id="ff-name" name="name" type="text" required placeholder="Enter your name" />
+      <input id="ff-name" name="name" type="text" required placeholder="Enter your name" disabled={submitting} />
       <label htmlFor="ff-email">Email</label>
-      <input id="ff-email" name="email" type="email" required placeholder="you@example.com" />
+      <input id="ff-email" name="email" type="email" required placeholder="you@example.com" disabled={submitting} />
       <label>Rating</label>
       <div className="ff-stars" style={{ display: "flex", gap: "0.375rem", direction: "rtl", justifyContent: "flex-end", marginBottom: "1rem" }}>
-        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="5" style={{ display: "none" }} /></label>
-        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="4" style={{ display: "none" }} /></label>
-        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="3" style={{ display: "none" }} /></label>
-        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="radio" value="2" style={{ display: "none" }} /></label>
-        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="1" style={{ display: "none" }} /></label>
+        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="5" style={{ display: "none" }} disabled={submitting} /></label>
+        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="4" style={{ display: "none" }} disabled={submitting} /></label>
+        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="3" style={{ display: "none" }} disabled={submitting} /></label>
+        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="2" style={{ display: "none" }} disabled={submitting} /></label>
+        <label style={{ cursor: "pointer", fontSize: "1.5rem" }}>⭐<input type="radio" name="rating" value="1" style={{ display: "none" }} disabled={submitting} /></label>
       </div>
       <label htmlFor="ff-msg">Your Feedback</label>
-      <textarea id="ff-msg" name="message" rows={4} required placeholder="Tell us what you think..."></textarea>
+      <textarea id="ff-msg" name="message" rows={4} required placeholder="Tell us what you think..." disabled={submitting}></textarea>
       {/* Honeypot Bot Trap */}
       <input name="website" tabIndex={-1} autoComplete="off" style={{ display: "none" }} />
-      <button type="submit">Submit Feedback</button>
+      {error && <p style={{ color: "#ef4444", fontSize: "0.875rem", margin: "0 0 1rem" }}>{error}</p>}
+      <button type="submit" disabled={submitting}>{submitting ? "Submitting..." : "Submit Feedback"}</button>
     </form>
   );
 }
