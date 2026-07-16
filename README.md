@@ -1,111 +1,152 @@
-# Raja Mantri Chor Sipahi Online (Cloudflare D1 + Workers Edition)
+# Raja Mantri Chor Sipahi Online (OpenNext + Cloudflare D1 Edition)
 
-A privacy-first, Cloudflare D1-backed online edition of the classic Indian four-player guessing game. Built on Next.js 16, React 19, and Drizzle ORM, configured specifically to run at the edge on Cloudflare Pages and Workers.
+A premium, privacy-first, Cloudflare D1-backed online edition of the classic Indian four-player guessing game. Built on Next.js 16 (App Router), React 19, and Drizzle ORM, optimized to run fully serverless on the edge with **@opennextjs/cloudflare**.
 
-## How to Play
+---
 
-A room requires exactly four players. Every round the server shuffles and privately deals one of these four roles:
+## 🎮 How to Play
+
+A table requires exactly **four players**. In every round, the server shuffles and privately deals one of the four roles:
 
 | Role | Points | What happens |
-| --- | ---: | --- |
-| 👑 Raja | 1000 | Calls for the Mantri; fixed points. |
-| 🗡️ Mantri | 800 or 0 | Reveals themselves and guesses the Chor. Correct guess: 800. Wrong guess: 0. |
-| 💰 Chor | 0 or 800 | Stays hidden. Takes 800 only if Mantri accuses Sipahi. |
-| 🛡️ Sipahi | 500 | Stays hidden; fixed points. |
+| :--- | :---: | :--- |
+| **👑 Raja (King)** | 1000 | Calls for the Mantri; fixed points. |
+| **🗡️ Mantri (Minister)** | 800 or 0 | Must identify the Chor. Correct guess: 800 pts. Wrong guess: 0 pts. |
+| **💰 Chor (Thief)** | 0 or 800 | Stays hidden. Takes the Mantri's 800 pts if the Mantri accuses the Sipahi. |
+| **🛡️ Sipahi (Soldier)** | 500 | Stays hidden; fixed points. |
 
-### Round Flow:
-
-1. **Host** creates a room and shares the six-digit invite code.
-2. Exactly **four** players join; the host starts the game.
-3. Each player sees only their own private role and confirms they've seen it.
-4. **Raja** calls "Mera Mantri kaun hai?"; the **Mantri** reveals themselves.
-5. The **Mantri** chooses one of the two remaining hidden players as the **Chor**.
-6. The server reveals all roles, calculates awards, updates scores, and starts the next round.
-7. After the selected number of rounds (e.g., 5 rounds), the highest score wins.
+### Game Flow:
+1. **Host** creates a room, selects the number of rounds (3, 5, or 10), and shares the 6-digit invite code.
+2. Exactly **four players** join the lobby.
+3. The Host starts the game; roles are dealt.
+4. Each player acknowledges their private card.
+5. **Raja** calls *"Mera Mantri kaun hai?"*; the **Mantri** reveals themselves.
+6. The **Mantri** accuses one of the remaining two players as the **Chor**.
+7. The server reveals all roles, assigns points, and updates the leaderboard.
+8. The Host advances to the next round. The player with the highest total points at the end wins!
 
 ---
 
-## Technical Stack
+## ✨ Features & Architecture
 
-- **Framework**: Next.js 16 (App Router) running on **Edge Runtime**
-- **Deployment Platform**: Cloudflare Pages / Workers
-- **Database**: Cloudflare D1 (SQLite-compatible Serverless SQL database)
-- **ORM**: Drizzle ORM
+* **D1 Cloudflare Database**: Powered by Cloudflare D1 (SQLite) with Drizzle ORM integration.
+* **OpenNext Build Wrapper**: Compiles directly into Cloudflare Workers and Assets, resolving asset copy issues on Windows.
+* **Persistent Dark Mode**: Toggle between light and dark modes with automated theme persistence in `localStorage`.
+* **Zero-Cookie Privacy**: Anonymous session IDs generated dynamically from salted browser seeds.
+* **Real Web Icons**: Native high-quality SVG favicon (`favicon.svg`) and high-resolution PNG icon (`icon.png`) fully configured in layouts.
+* **Edge-First Security**: Route-level security headers, encrypted device identity seeds, and fully server-authoritative state checks to prevent cheat inspection.
+
+---
+
+## 🛠️ Technical Stack
+
+- **Frontend/Backend**: Next.js 16 (App Router) on **Edge Runtime**
+- **Hosting**: Cloudflare Pages / Workers
+- **Database**: Cloudflare D1 (Serverless SQLite)
+- **Database Client**: Drizzle ORM (Runtime Context Dynamic Proxy Client)
+- **Deployment Adapter**: `@opennextjs/cloudflare` (OpenNext)
 - **Validations**: Zod
-- **Identity & Privacy**: Guest sessions with salted SHA-256 device hash, fully anonymous
+- **Icons**: Lucide React & Custom Assets
 
 ---
 
-## Local Setup & Development
+## 📋 Local Setup & Development
 
 ### 1. Install Dependencies
 ```bash
 npm install --legacy-peer-deps
 ```
 
-### 2. Generate SQLite Migrations
-Use Drizzle Kit to generate migrations based on the schema:
+### 2. Generate D1 Migrations
+Generate SQLite-compatible migration files using Drizzle Kit:
 ```bash
 npx drizzle-kit generate
 ```
 
-### 3. Local Database & Development
-To run the server locally with a local D1 instance (using Wrangler Pages emulator):
+### 3. Run Locally with Wrangler
+Run the local environment with emulated D1 bindings:
 ```bash
-# 1. Build next-on-pages artifact
-npm run pages:build
-
-# 2. Run local preview with emulated D1 bindings
-npx wrangler pages dev .vercel/output --compatibility-flags=nodejs_compat --d1 DB=chor-sipahi-db
-```
-
-To apply migrations locally for testing:
-```bash
+# Apply migrations to your local emulator database
 npx wrangler d1 migrations apply chor-sipahi-db --local
+
+# Build the OpenNext Cloudflare bundle
+npm run build
+
+# Start wrangler local pages development server
+npx wrangler dev
 ```
 
 ---
 
-## Deploying to Cloudflare
+## 🚀 Deploying to Cloudflare
 
-### 1. Create a D1 Database
-Create the database via wrangler:
+### 1. Database Creation
+If you haven't created the D1 database yet, create it using Wrangler:
 ```bash
 npx wrangler d1 create chor-sipahi-db
 ```
-Wrangler will output the configuration. Paste the `database_id` into your `wrangler.toml`:
-```toml
-[[d1_databases]]
-binding = "DB"
-database_name = "chor-sipahi-db"
-database_id = "YOUR_DATABASE_ID_HERE"
-migrations_dir = "./drizzle/migrations"
+Copy the generated `database_id` and update it in [**wrangler.jsonc**](file:///c:/Users/DELL/Desktop/forme%20forge%20investigation/chorsipahi-online-game-development/wrangler.jsonc):
+```json
+      "database_id": "YOUR_DATABASE_ID"
 ```
 
-### 2. Run Migrations on Production D1
-Apply generated schema migrations to your live Cloudflare D1 database:
+### 2. Run Database Migrations on Remote
+Push the schema to your live D1 database in Cloudflare:
 ```bash
 npx wrangler d1 migrations apply chor-sipahi-db --remote
 ```
 
-### 3. Deploy App
-Compile and deploy the application:
+### 3. Compile and Deploy App
+Build and deploy the application:
 ```bash
-npm run pages:build
-npx wrangler pages deploy .vercel/output
+npm run build
+npx wrangler deploy
 ```
 
 ---
 
-## API Endpoints
+## 🔒 Environment Variables (Cloudflare Dashboard)
 
-- `GET /api/auth` — Returns guest identity hash
-- `GET /api/rooms` — Lists public waiting rooms
-- `POST /api/rooms` — Creates a new game room
-- `POST /api/rooms/:roomCode/join` — Joins a waiting room
-- `POST /api/rooms/:roomCode/start` — Host deals roles and starts game
-- `GET /api/rooms/:roomCode/state` — Syncs game room state safely
-- `POST /api/rooms/:roomCode/action` — Acknowledge role, reveal Mantri, guess Chor, or proceed to next round
-- `POST /api/rooms/:roomCode/chat` — Chat inside the game table
-- `GET /api/stats` — Leaderboard stats
-- `GET /api/health` — Cloudflare D1 connection health check
+Set the following variables in the Cloudflare Pages/Workers environment variables settings:
+
+| Variable | Type | Description |
+| :--- | :--- | :--- |
+| `DB` | D1 Database Binding | Bind to the D1 Database named `chor-sipahi-db`. |
+| `ENVIRONMENT` | String | Set to `production` (default in config). |
+| `DEVICE_ID_SALT` | String | **(Critical)** Any secure random key/salt used to hash browser seeds to prevent session tampering. |
+
+---
+
+## 📑 API Reference
+
+* `GET /api/auth` — Returns guest identity hash based on device seed.
+* `GET /api/rooms` — Lists public lobbies waiting for players.
+* `POST /api/rooms` — Creates a game room.
+* `POST /api/rooms/:roomCode/join` — Joins an active lobby.
+* `POST /api/rooms/:roomCode/start` — Starts the match (Host only).
+* `GET /api/rooms/:roomCode/state` — Safely syncs match status (only shows permitted card info to each player).
+* `POST /api/rooms/:roomCode/action` — Game actions (Acknowledge, Reveal Mantri, Guess Chor, Next Round).
+* `POST /api/rooms/:roomCode/chat` — Send in-room chat message.
+* `GET /api/stats` — Retrieves game leaderboard.
+* `GET /api/health` — Checks D1 database binding health status.
+
+---
+
+## 🕒 Version History & Changelog
+
+### **v2.0.0 (Current Edition - OpenNext & D1 migration)**
+* **Adapter Shift**: Migrated project from Cloudflare Pages native build configuration to `@opennextjs/cloudflare` (OpenNext adapter).
+* **Database Migration**: Swapped PostgreSQL schema and queries for SQLite-compatible core types under Cloudflare D1.
+* **Build Wrapper Integration**: Created `build-cf.js` build script wrapper to solve Windows-related output copy issues, enabling seamless Windows/Linux local compilation.
+* **Dark Mode Toggle**: Integrated the `<ThemeToggle />` component in the header navigation with `localStorage` state retention.
+* **Icons Optimization**: Added high-quality SVG logo and custom PNG icons inside layout metadata configurations.
+* **Security & Routing Adjustments**:
+  - Removed standard Next.js Node.js middleware (`src/proxy.ts`) to avoid compilation crashes under edge runtimes.
+  - Injected security headers directly through standard `next.config.ts`.
+  - Configured secure dynamic device salt fetch from Cloudflare runtime context.
+  - Removed GitHub Actions workflows (`.github`) to ensure clean developer-driven wrangler deployment pipelines.
+
+### **v1.0.0 (Legacy Edition - Postgres & Node.js)**
+* Initial codebase built with generic PostgreSQL setup.
+* Relied on traditional Node.js modules (such as `node:crypto`) that are unsupported under edge sandboxes.
+* Standard Pages/Vercel build output structure.

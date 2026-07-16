@@ -18,7 +18,8 @@ function createSeed() { return `${crypto.randomUUID()}-${Math.random().toString(
 
 export function RajaMantriApp() {
   const [seed, setSeed, seedReady] = useLocalStorage("rmsc-device-seed", "");
-  const [dark, setDark] = useLocalStorage("rmsc-dark-mode", false);
+  const [dark, setDark] = useLocalStorage("rmsc-dark-mode", true);
+
   useEffect(() => {
     if (dark) {
       document.body.classList.add("dark");
