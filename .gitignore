@@ -33,3 +33,6 @@ next-env.d.ts
 # wrangler / cloudflare pages dev / workers
 .wrangler
 .dev.vars
+.open-next
+.next
+

@@ -1,15 +1,14 @@
 import { drizzle } from "drizzle-orm/d1";
-import { getRequestContext } from "@cloudflare/next-on-pages";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import * as schema from "./schema";
 
 const getD1Db = () => {
   let binding: any;
   try {
-    const context = getRequestContext();
+    const context = getCloudflareContext();
     binding = (context?.env as any)?.DB;
   } catch {
-
-    // getRequestContext may throw outside request handlers
+    // getCloudflareContext may throw outside request handlers
   }
 
   if (!binding) {
@@ -18,7 +17,7 @@ const getD1Db = () => {
     return new Proxy({} as any, {
       get() {
         return () => {
-          throw new Error("Database query attempted outside an active Edge request context with a D1 binding.");
+          throw new Error("Database query attempted outside an active OpenNext request context with a D1 binding.");
         };
       }
     });

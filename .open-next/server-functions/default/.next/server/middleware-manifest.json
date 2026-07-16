@@ -1,0 +1,262 @@
+{
+  "version": 3,
+  "middleware": {},
+  "sortedMiddleware": [],
+  "functions": {
+    "/api/health/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "required-server-files.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/health/route_client-reference-manifest.js",
+        "server/edge/chunks/_next-internal_server_app_api_health_route_actions_0xzu-qp.js",
+        "server/edge/chunks/node_modules_next_dist_esm_0vuxocd._.js",
+        "server/edge/chunks/[root-of-the-server]__03xutk7._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_12y8cgd.js"
+      ],
+      "name": "app/api/health/route",
+      "page": "/api/health/route",
+      "entrypoint": "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_12y8cgd.js",
+      "matchers": [
+        {
+          "regexp": "^/api/health(?:/)?$",
+          "originalSource": "/api/health"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "CjoP7G1RJsbr6jV7T2HRA",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "Bu863SFC80oocILNY6xZzumdFOaJdgIy936iwIyD5VI=",
+        "__NEXT_PREVIEW_MODE_ID": "331921948fe8a0a0611e8d9b430a0570",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "cb07e690d1df2deaa9c1d48431f95bd81751174ab2cd0352fac2725135c63e9f",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "031dd91eef48110d88d5477a5dc11f5b27554533e629bcd1084224d0b73b98a5"
+      }
+    },
+    "/api/rooms/[roomCode]/action/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "required-server-files.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/rooms/[roomCode]/action/route_client-reference-manifest.js",
+        "server/edge/chunks/_next-internal_server_app_api_rooms_[roomCode]_action_route_actions_056~jv7.js",
+        "server/edge/chunks/_0i3z0v0._.js",
+        "server/edge/chunks/node_modules_next_dist_esm_build_templates_edge-app-route_10-i~jw.js",
+        "server/edge/chunks/[root-of-the-server]__124w5r~._.js",
+        "server/edge/chunks/src_lib_validation_ts_0fgq6lv._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_0lg1b_z.js"
+      ],
+      "name": "app/api/rooms/[roomCode]/action/route",
+      "page": "/api/rooms/[roomCode]/action/route",
+      "entrypoint": "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_0lg1b_z.js",
+      "matchers": [
+        {
+          "regexp": "^/api/rooms/(?P<nxtProomCode>[^/]+?)/action(?:/)?$",
+          "originalSource": "/api/rooms/[roomCode]/action"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "CjoP7G1RJsbr6jV7T2HRA",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "Bu863SFC80oocILNY6xZzumdFOaJdgIy936iwIyD5VI=",
+        "__NEXT_PREVIEW_MODE_ID": "331921948fe8a0a0611e8d9b430a0570",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "cb07e690d1df2deaa9c1d48431f95bd81751174ab2cd0352fac2725135c63e9f",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "031dd91eef48110d88d5477a5dc11f5b27554533e629bcd1084224d0b73b98a5"
+      }
+    },
+    "/api/rooms/[roomCode]/chat/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "required-server-files.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/rooms/[roomCode]/chat/route_client-reference-manifest.js",
+        "server/edge/chunks/_next-internal_server_app_api_rooms_[roomCode]_chat_route_actions_07m_~c..js",
+        "server/edge/chunks/_0x31vzx._.js",
+        "server/edge/chunks/[root-of-the-server]__124w5r~._.js",
+        "server/edge/chunks/src_lib_validation_ts_0fgq6lv._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_054hpvb.js"
+      ],
+      "name": "app/api/rooms/[roomCode]/chat/route",
+      "page": "/api/rooms/[roomCode]/chat/route",
+      "entrypoint": "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_054hpvb.js",
+      "matchers": [
+        {
+          "regexp": "^/api/rooms/(?P<nxtProomCode>[^/]+?)/chat(?:/)?$",
+          "originalSource": "/api/rooms/[roomCode]/chat"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "CjoP7G1RJsbr6jV7T2HRA",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "Bu863SFC80oocILNY6xZzumdFOaJdgIy936iwIyD5VI=",
+        "__NEXT_PREVIEW_MODE_ID": "331921948fe8a0a0611e8d9b430a0570",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "cb07e690d1df2deaa9c1d48431f95bd81751174ab2cd0352fac2725135c63e9f",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "031dd91eef48110d88d5477a5dc11f5b27554533e629bcd1084224d0b73b98a5"
+      }
+    },
+    "/api/rooms/[roomCode]/join/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "required-server-files.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/rooms/[roomCode]/join/route_client-reference-manifest.js",
+        "server/edge/chunks/_next-internal_server_app_api_rooms_[roomCode]_join_route_actions_0qa1be0.js",
+        "server/edge/chunks/_0si2kbp._.js",
+        "server/edge/chunks/[root-of-the-server]__124w5r~._.js",
+        "server/edge/chunks/src_lib_validation_ts_0fgq6lv._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_0ilf_44.js"
+      ],
+      "name": "app/api/rooms/[roomCode]/join/route",
+      "page": "/api/rooms/[roomCode]/join/route",
+      "entrypoint": "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_0ilf_44.js",
+      "matchers": [
+        {
+          "regexp": "^/api/rooms/(?P<nxtProomCode>[^/]+?)/join(?:/)?$",
+          "originalSource": "/api/rooms/[roomCode]/join"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "CjoP7G1RJsbr6jV7T2HRA",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "Bu863SFC80oocILNY6xZzumdFOaJdgIy936iwIyD5VI=",
+        "__NEXT_PREVIEW_MODE_ID": "331921948fe8a0a0611e8d9b430a0570",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "cb07e690d1df2deaa9c1d48431f95bd81751174ab2cd0352fac2725135c63e9f",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "031dd91eef48110d88d5477a5dc11f5b27554533e629bcd1084224d0b73b98a5"
+      }
+    },
+    "/api/rooms/[roomCode]/start/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "required-server-files.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/rooms/[roomCode]/start/route_client-reference-manifest.js",
+        "server/edge/chunks/_next-internal_server_app_api_rooms_[roomCode]_start_route_actions_0lfrz.u.js",
+        "server/edge/chunks/_0kx1w9p._.js",
+        "server/edge/chunks/[root-of-the-server]__124w5r~._.js",
+        "server/edge/chunks/src_lib_validation_ts_0fgq6lv._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_0rprm6e.js"
+      ],
+      "name": "app/api/rooms/[roomCode]/start/route",
+      "page": "/api/rooms/[roomCode]/start/route",
+      "entrypoint": "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_0rprm6e.js",
+      "matchers": [
+        {
+          "regexp": "^/api/rooms/(?P<nxtProomCode>[^/]+?)/start(?:/)?$",
+          "originalSource": "/api/rooms/[roomCode]/start"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "CjoP7G1RJsbr6jV7T2HRA",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "Bu863SFC80oocILNY6xZzumdFOaJdgIy936iwIyD5VI=",
+        "__NEXT_PREVIEW_MODE_ID": "331921948fe8a0a0611e8d9b430a0570",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "cb07e690d1df2deaa9c1d48431f95bd81751174ab2cd0352fac2725135c63e9f",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "031dd91eef48110d88d5477a5dc11f5b27554533e629bcd1084224d0b73b98a5"
+      }
+    },
+    "/api/rooms/[roomCode]/state/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "required-server-files.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/rooms/[roomCode]/state/route_client-reference-manifest.js",
+        "server/edge/chunks/_next-internal_server_app_api_rooms_[roomCode]_state_route_actions_0-ryazn.js",
+        "server/edge/chunks/_0jyc._f._.js",
+        "server/edge/chunks/[root-of-the-server]__0t2u9~w._.js",
+        "server/edge/chunks/src_lib_validation_ts_0fgq6lv._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_09.-23y.js"
+      ],
+      "name": "app/api/rooms/[roomCode]/state/route",
+      "page": "/api/rooms/[roomCode]/state/route",
+      "entrypoint": "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_09.-23y.js",
+      "matchers": [
+        {
+          "regexp": "^/api/rooms/(?P<nxtProomCode>[^/]+?)/state(?:/)?$",
+          "originalSource": "/api/rooms/[roomCode]/state"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "CjoP7G1RJsbr6jV7T2HRA",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "Bu863SFC80oocILNY6xZzumdFOaJdgIy936iwIyD5VI=",
+        "__NEXT_PREVIEW_MODE_ID": "331921948fe8a0a0611e8d9b430a0570",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "cb07e690d1df2deaa9c1d48431f95bd81751174ab2cd0352fac2725135c63e9f",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "031dd91eef48110d88d5477a5dc11f5b27554533e629bcd1084224d0b73b98a5"
+      }
+    },
+    "/api/rooms/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "required-server-files.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/rooms/route_client-reference-manifest.js",
+        "server/edge/chunks/_next-internal_server_app_api_rooms_route_actions_01o_o~o.js",
+        "server/edge/chunks/_0u9ycy.._.js",
+        "server/edge/chunks/[root-of-the-server]__124w5r~._.js",
+        "server/edge/chunks/src_lib_validation_ts_0fgq6lv._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_13mw0tk.js"
+      ],
+      "name": "app/api/rooms/route",
+      "page": "/api/rooms/route",
+      "entrypoint": "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_13mw0tk.js",
+      "matchers": [
+        {
+          "regexp": "^/api/rooms(?:/)?$",
+          "originalSource": "/api/rooms"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "CjoP7G1RJsbr6jV7T2HRA",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "Bu863SFC80oocILNY6xZzumdFOaJdgIy936iwIyD5VI=",
+        "__NEXT_PREVIEW_MODE_ID": "331921948fe8a0a0611e8d9b430a0570",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "cb07e690d1df2deaa9c1d48431f95bd81751174ab2cd0352fac2725135c63e9f",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "031dd91eef48110d88d5477a5dc11f5b27554533e629bcd1084224d0b73b98a5"
+      }
+    },
+    "/api/stats/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "required-server-files.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/stats/route_client-reference-manifest.js",
+        "server/edge/chunks/_next-internal_server_app_api_stats_route_actions_00uhq2p.js",
+        "server/edge/chunks/_0hcy9g3._.js",
+        "server/edge/chunks/[root-of-the-server]__0v3tth6._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_0h6jkf_.js"
+      ],
+      "name": "app/api/stats/route",
+      "page": "/api/stats/route",
+      "entrypoint": "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_0h6jkf_.js",
+      "matchers": [
+        {
+          "regexp": "^/api/stats(?:/)?$",
+          "originalSource": "/api/stats"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "CjoP7G1RJsbr6jV7T2HRA",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "Bu863SFC80oocILNY6xZzumdFOaJdgIy936iwIyD5VI=",
+        "__NEXT_PREVIEW_MODE_ID": "331921948fe8a0a0611e8d9b430a0570",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "cb07e690d1df2deaa9c1d48431f95bd81751174ab2cd0352fac2725135c63e9f",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "031dd91eef48110d88d5477a5dc11f5b27554533e629bcd1084224d0b73b98a5"
+      }
+    }
+  }
+}

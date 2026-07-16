@@ -1,0 +1,14 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/auth/route": "app/api/auth/route.js",
+  "/api/health/route": "app-edge-has-no-entrypoint",
+  "/api/rooms/[roomCode]/action/route": "app-edge-has-no-entrypoint",
+  "/api/rooms/[roomCode]/chat/route": "app-edge-has-no-entrypoint",
+  "/api/rooms/[roomCode]/join/route": "app-edge-has-no-entrypoint",
+  "/api/rooms/[roomCode]/start/route": "app-edge-has-no-entrypoint",
+  "/api/rooms/[roomCode]/state/route": "app-edge-has-no-entrypoint",
+  "/api/rooms/route": "app-edge-has-no-entrypoint",
+  "/api/stats/route": "app-edge-has-no-entrypoint",
+  "/page": "app/page.js"
+}

@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "functions": {
+    "/api/health": {},
+    "/api/rooms": {},
+    "/api/rooms/[roomCode]/action": {},
+    "/api/rooms/[roomCode]/chat": {},
+    "/api/rooms/[roomCode]/join": {},
+    "/api/rooms/[roomCode]/start": {},
+    "/api/rooms/[roomCode]/state": {},
+    "/api/stats": {}
+  }
+}
