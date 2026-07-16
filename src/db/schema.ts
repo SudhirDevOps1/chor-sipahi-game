@@ -30,7 +30,10 @@ export const gameSessions = sqliteTable("game_sessions", {
   currentRound: integer("current_round").default(0).notNull(),
   endedAt: integer("ended_at", { mode: "timestamp" }),
   isPrivate: integer("is_private", { mode: "boolean" }).default(false).notNull(),
+  gameType: text("game_type").default("chor_sipahi").notNull(),
+  gameState: text("game_state"),
 }, (table) => ({
+
   statusIndex: index("game_sessions_status_idx").on(table.gameStatus),
 }));
 

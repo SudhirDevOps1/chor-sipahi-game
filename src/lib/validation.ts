@@ -7,18 +7,18 @@ export const createRoomSchema = z.object({
   playerName: z.string().trim().min(2).max(24),
   roundsToPlay: roundsSchema.default(5),
   isPrivate: z.boolean().default(true),
+  gameType: z.string().default("chor_sipahi"),
 });
 
 export const joinRoomSchema = z.object({
   playerName: z.string().trim().min(2).max(24),
 });
 
-export const roomActionSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("acknowledge_role"), playerId: z.string().uuid() }),
-  z.object({ type: z.literal("reveal_mantri"), playerId: z.string().uuid() }),
-  z.object({ type: z.literal("guess_chor"), playerId: z.string().uuid(), suspectPlayerId: z.string().uuid() }),
-  z.object({ type: z.literal("next_round"), playerId: z.string().uuid() }),
-]);
+export const roomActionSchema = z.object({
+  type: z.string(),
+  playerId: z.string().uuid().optional(),
+}).passthrough();
+
 
 export const chatSchema = z.object({
   playerId: z.string().uuid(),

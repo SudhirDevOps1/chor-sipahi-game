@@ -1,9 +1,13 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { gameRounds, gameSessions, players, roundPlayers } from "@/db/schema";
 import { getDeviceId, privacyHeaders } from "@/lib/privacy";
 import { assignRoles, calculateAwards } from "@/lib/raja-game";
 import { roomActionSchema, roomCodeSchema } from "@/lib/validation";
+import { handleTicTacToeAction } from "@/lib/games/tic-tac-toe";
+import { handleRpsAction } from "@/lib/games/rps";
+import { handleConnectFourAction } from "@/lib/games/connect-four";
+import { handleLudoAction } from "@/lib/games/ludo";
 
 export const dynamic = "force-dynamic";
 
@@ -20,11 +24,55 @@ export async function POST(request: Request, context: Context) {
     const { roomCode } = await context.params;
     roomCodeSchema.parse(roomCode);
     const action = roomActionSchema.parse(await request.json());
+    if (!action.playerId) return Response.json({ error: "Missing player credentials" }, { status: 400, headers: privacyHeaders() });
     const deviceId = getDeviceId(request);
     const [room] = await db.select().from(gameSessions).where(eq(gameSessions.roomCode, roomCode)).limit(1);
     if (!room) return Response.json({ error: "Room not found" }, { status: 404, headers: privacyHeaders() });
     const [actor] = await db.select().from(players).where(and(eq(players.id, action.playerId), eq(players.roomCode, roomCode), eq(players.deviceId, deviceId))).limit(1);
+
     if (!actor) return Response.json({ error: "Your guest session is not valid for this room" }, { status: 403, headers: privacyHeaders() });
+
+    const roster = (await db.select().from(players).where(eq(players.roomCode, roomCode)).orderBy(asc(players.joinedAt))) as any[];
+
+    if (room.gameType !== "chor_sipahi") {
+      let state = room.gameState ? JSON.parse(room.gameState) : null;
+      let nextState: any = null;
+
+      try {
+        if (room.gameType === "tic_tac_toe") {
+          nextState = handleTicTacToeAction(state, action, actor.id, roster);
+        } else if (room.gameType === "rps") {
+          nextState = handleRpsAction(state, action, actor.id, roster);
+        } else if (room.gameType === "connect_four") {
+          nextState = handleConnectFourAction(state, action, actor.id, roster);
+        } else if (room.gameType === "ludo") {
+          nextState = handleLudoAction(state, action, actor.id, roster);
+        }
+      } catch (err: any) {
+        return Response.json({ error: err.message || "Invalid move" }, { status: 400, headers: privacyHeaders() });
+      }
+
+      const updateData: any = {
+        gameState: JSON.stringify(nextState),
+      };
+
+      if (nextState.winnerId) {
+        updateData.gameStatus = "finished";
+        updateData.phase = "game_over";
+        updateData.endedAt = new Date();
+
+        // Award score to the winner
+        if (nextState.winnerId !== "draw") {
+          await db.update(players)
+            .set({ score: sql`${players.score} + 100` })
+            .where(eq(players.id, nextState.winnerId));
+        }
+      }
+
+      await db.update(gameSessions).set(updateData).where(eq(gameSessions.roomCode, roomCode));
+      return Response.json({ ok: true }, { headers: privacyHeaders() });
+    }
+
     const currentRound = await getCurrentRound(roomCode, room.currentRound);
     if (!currentRound) return Response.json({ error: "No active round exists" }, { status: 409, headers: privacyHeaders() });
     const assignments = (await db.select().from(roundPlayers).where(eq(roundPlayers.roundId, currentRound.id))) as any[];
@@ -48,16 +96,18 @@ export async function POST(request: Request, context: Context) {
 
     if (action.type === "guess_chor") {
       if (room.phase !== "guess" || actorAssignment?.role !== "mantri") return Response.json({ error: "Only the Mantri can make this guess" }, { status: 403, headers: privacyHeaders() });
-      const suspect = assignments.find((assignment) => assignment.playerId === action.suspectPlayerId);
+      const suspectPlayerId = action.suspectPlayerId as string;
+      const suspect = assignments.find((assignment) => assignment.playerId === suspectPlayerId);
       if (!suspect || !["chor", "sipahi"].includes(suspect.role)) return Response.json({ error: "Choose one of the two unknown players" }, { status: 400, headers: privacyHeaders() });
-      const result = calculateAwards(assignments.map((assignment) => ({ playerId: assignment.playerId, role: assignment.role })), action.suspectPlayerId);
+      const result = calculateAwards(assignments.map((assignment) => ({ playerId: assignment.playerId, role: assignment.role })), suspectPlayerId);
       await db.transaction(async (tx: any) => {
         await Promise.all(assignments.map((assignment) => tx.update(roundPlayers).set({ pointsAwarded: result.awards[assignment.playerId] ?? 0 }).where(eq(roundPlayers.id, assignment.id))));
         await Promise.all(assignments.map((assignment) => tx.update(players).set({ score: sql`${players.score} + ${result.awards[assignment.playerId] ?? 0}` }).where(eq(players.id, assignment.playerId))));
-        await tx.update(gameRounds).set({ mantriGuessPlayerId: action.suspectPlayerId, isGuessCorrect: result.correct, finishedAt: new Date() }).where(eq(gameRounds.id, currentRound.id));
+        await tx.update(gameRounds).set({ mantriGuessPlayerId: suspectPlayerId, isGuessCorrect: result.correct, finishedAt: new Date() }).where(eq(gameRounds.id, currentRound.id));
         const finalRound = room.currentRound >= room.roundsToPlay;
         await tx.update(gameSessions).set({ phase: finalRound ? "game_over" : "round_result", gameStatus: finalRound ? "finished" : "playing", endedAt: finalRound ? new Date() : null }).where(eq(gameSessions.roomCode, roomCode));
       });
+
       return Response.json({ ok: true }, { headers: privacyHeaders() });
     }
 

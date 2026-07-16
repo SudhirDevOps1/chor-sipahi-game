@@ -33,6 +33,8 @@ export interface RajaGameState {
   roundsToPlay: number;
   currentRound: number;
   isPrivate: boolean;
+  gameType: string;
+  gameState?: any;
   players: RolePlayer[];
   myRole: GameRole | null;
   hasSeenRole: boolean;
@@ -49,7 +51,9 @@ export interface RoomSummary {
   maxPlayers: number;
   createdAt: string;
   status: GameStatus;
+  gameType: string;
 }
+
 
 export interface GuestIdentity {
   deviceId: string;

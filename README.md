@@ -165,6 +165,20 @@ Cloudflare D1 Free Tier allows **100,000 writes per day** and **5 GB database st
 
 ---
 
+## 🔒 Privacy & Auto-Deletion Policy
+
+This game platform is designed with a **privacy-first philosophy**:
+
+1. **Zero Personal Data Collection**: We do not store names, email addresses, IP addresses, or phone numbers.
+2. **Anonymous Device Identification**: Player device sessions are identified via an anonymous browser fingerprint hash. This hash is generated locally using browser entropy, salted with a secure worker-level environment secret (`DEVICE_ID_SALT`), and hashed with SHA-256. Raw cookies are never saved.
+3. **30-Day Auto-Deletion (Cascading Purge)**:
+   - To prevent storage clutter and protect user chat logs/game metadata, **all game rooms, round assignments, chat logs, and moves are automatically deleted from the database 30 days after creation**.
+   - The deletion is executed automatically via cascading database triggers inside the room creation endpoint.
+4. **No Third-Party Trackers**: We do not load third-party ad pixels, cookies, or track analytics.
+
+---
+
+
 ## 🕒 Version History & Changelog
 
 

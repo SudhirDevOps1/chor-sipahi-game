@@ -21,7 +21,10 @@ export async function POST(request: Request, context: Context) {
     const [existing] = await db.select().from(players).where(and(eq(players.roomCode, roomCode), eq(players.deviceId, deviceId))).limit(1);
     if (existing) return Response.json({ roomCode, playerId: existing.id }, { headers: privacyHeaders() });
     const roster = await db.select({ id: players.id }).from(players).where(eq(players.roomCode, roomCode));
-    if (roster.length >= 4) return Response.json({ error: "This room already has four players" }, { status: 409, headers: privacyHeaders() });
+    const limit = ["tic_tac_toe", "rps", "connect_four"].includes(room.gameType) ? 2 : 4;
+    if (roster.length >= limit) return Response.json({ error: `This room already has ${limit} players` }, { status: 409, headers: privacyHeaders() });
+
+
     const playerId = crypto.randomUUID();
     await db.insert(players).values({ id: playerId, roomCode, name: input.playerName, tokenEmoji: "●", deviceId });
     return Response.json({ roomCode, playerId }, { status: 201, headers: privacyHeaders() });

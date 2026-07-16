@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, lt } from "drizzle-orm";
 import { db } from "@/db";
 import { gameSessions, players } from "@/db/schema";
 import { getDeviceId, privacyHeaders } from "@/lib/privacy";
@@ -18,8 +18,8 @@ export async function GET() {
 
     const summaries = await Promise.all(rooms.filter((room) => !room.isPrivate).map(async (room) => {
       const roster = await db.select({ id: players.id }).from(players).where(eq(players.roomCode, room.roomCode));
-      return { roomCode: room.roomCode, roundsToPlay: room.roundsToPlay, playersCount: roster.length, maxPlayers: 4, createdAt: new Date(room.createdAt).toISOString(), status: room.gameStatus };
-
+      const maxPlayers = ["tic_tac_toe", "rps", "connect_four"].includes(room.gameType) ? 2 : 4;
+      return { roomCode: room.roomCode, roundsToPlay: room.roundsToPlay, playersCount: roster.length, maxPlayers, createdAt: new Date(room.createdAt).toISOString(), status: room.gameStatus, gameType: room.gameType };
     }));
     return Response.json({ rooms: summaries }, { headers: privacyHeaders() });
   } catch {
@@ -29,6 +29,10 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    // Auto-cleanup rooms older than 30 days (cascading deletes will clear players, chat, and round state)
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    await db.delete(gameSessions).where(lt(gameSessions.createdAt, thirtyDaysAgo));
+
     const input = createRoomSchema.parse(await request.json());
     const deviceId = getDeviceId(request);
     let roomCode = createRoomCode();
@@ -38,7 +42,9 @@ export async function POST(request: Request) {
       roomCode = createRoomCode();
     }
     const playerId = crypto.randomUUID();
-    await db.insert(gameSessions).values({ roomCode, hostDeviceId: deviceId, roundsToPlay: input.roundsToPlay, isPrivate: input.isPrivate, phase: "lobby" });
+    await db.insert(gameSessions).values({ roomCode, hostDeviceId: deviceId, roundsToPlay: input.roundsToPlay, isPrivate: input.isPrivate, phase: "lobby", gameType: input.gameType });
+
+
     await db.insert(players).values({ id: playerId, roomCode, name: input.playerName, tokenEmoji: "👑", isHost: true, deviceId });
     return Response.json({ roomCode, playerId }, { status: 201, headers: privacyHeaders() });
   } catch (error) {
