@@ -19,7 +19,8 @@
     {
       "binding": "DB",
       "database_name": "chor-sipahi-db",
-      "database_id": "d1-placeholder-id-please-update",
+      "database_id": "ccc3f16d-dd62-4023-8d0b-573843eb00f5",
+
       "migrations_dir": "drizzle/migrations"
     }
   ]
