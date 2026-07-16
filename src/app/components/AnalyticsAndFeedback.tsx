@@ -96,17 +96,25 @@ export function FormForgeContactForm() {
     setError(null);
     try {
       const formData = new FormData(e.currentTarget);
+      const params = new URLSearchParams();
+      formData.forEach((value, key) => {
+        params.append(key, value.toString());
+      });
       const res = await fetch("https://apnaform.sudhirdevops1.workers.dev/api/submit/endpoint_hSQ8pIPJWdphv4LunoqB4XgG", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: params.toString(),
       });
-      if (res.ok) {
+      const data = await res.json() as any;
+      if (res.ok && data.ok) {
         setSubmitted(true);
       } else {
-        throw new Error("Submission failed");
+        throw new Error(data.message || "Submission failed");
       }
-    } catch (err) {
-      setError("Failed to send message. Please try again.");
+    } catch (err: any) {
+      setError(err.message || "Failed to send message. Please try again.");
     } finally {
       setSubmitting(false);
     }
