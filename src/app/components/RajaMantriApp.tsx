@@ -200,9 +200,177 @@ export function RajaMantriApp() {
 }
 
 function Landing({ selectedGame, setSelectedGame, createName, setCreateName, joinName, setJoinName, joinCode, setJoinCode, rounds, setRounds, rooms, busy, onCreate, onJoin, onRoomPick, onRefresh }: { selectedGame: string; setSelectedGame: (value: string) => void; createName: string; setCreateName: (value: string) => void; joinName: string; setJoinName: (value: string) => void; joinCode: string; setJoinCode: (value: string) => void; rounds: 3 | 5 | 10; setRounds: (value: 3 | 5 | 10) => void; rooms: RoomSummary[]; busy: boolean; onCreate: (event: React.FormEvent) => void; onJoin: (event: React.FormEvent) => void; onRoomPick: (code: string) => void; onRefresh: () => void }) {
-  return <><main className="landing"><section className="intro"><p className="eyebrow"><Sparkles size={14} /> MULTI-GAME PARTY HUB</p><h1>Play classic games.<br /><em>Bluff & Win.</em></h1><p className="intro-copy">Select from 5 classic board, card and role-deduction games. Instant rooms. No downloads. No account. Fast & Secure.</p><div className="role-stamps"><span>👑 Raja Mantri</span><span>🎲 Ludo</span><span>❌ Tic-Tac-Toe</span><span>🔴 Connect 4</span></div></section><section className="paper-stack"><div className="paper-note paper-back" /><div className="paper-note paper-main"><p className="eyebrow">ONE LOBBY · ZERO SETUP</p><h3>Choose Your Game</h3><div className="paper-roles"><span>👑</span><span>🎲</span><span>❌</span><span>🔴</span></div><p>Play with 2, 3 or 4 players instantly.</p></div></section></main><section className="lobby-area"><div className="lobby-card"><div className="lobby-card-heading"><span className="card-number">01</span><div><p className="eyebrow">OPEN A TABLE</p><h2>Create a private room</h2></div></div><form onSubmit={onCreate} className="lobby-form"><label>Your name<input value={createName} onChange={(event) => setCreateName(event.target.value)} maxLength={24} placeholder="e.g. Aanya" required /></label><label>Select Game<select value={selectedGame} onChange={(event) => setSelectedGame(event.target.value)}><option value="chor_sipahi">👑 Raja Mantri Chor Sipahi (4 Players)</option><option value="ludo">🎲 Rapid Ludo (2-4 Players)</option><option value="tic_tac_toe">❌⭕ Tic-Tac-Toe (2 Players)</option><option value="rps">✊✌️ Rock Paper Scissors (2 Players)</option><option value="connect_four">🔴 Connect Four (2 Players)</option></select></label><label>How many rounds?<select value={rounds} onChange={(event) => setRounds(Number(event.target.value) as 3 | 5 | 10)}><option value={3}>3 quick rounds</option><option value={5}>5 classic rounds</option><option value={10}>10 long-game rounds</option></select></label><button className="heritage-button" disabled={busy}>Create private room <ArrowRight size={17} /></button></form></div><div className="lobby-card join-card"><div className="lobby-card-heading"><span className="card-number">02</span><div><p className="eyebrow">HAVE A CODE?</p><h2>Join your friends</h2></div></div><form onSubmit={onJoin} className="lobby-form"><label>Room code<input value={joinCode} onChange={(event) => setJoinCode(event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" placeholder="6 digits" required /></label><label>Your name<input value={joinName} onChange={(event) => setJoinName(event.target.value)} maxLength={24} placeholder="e.g. Kabir" required /></label><button className="outline-button" disabled={busy || joinCode.length !== 6}>Join room <ChevronRight size={17} /></button></form></div><div className="open-rooms"><div className="open-rooms-head"><div><p className="eyebrow">OPTIONAL</p><h2>Open tables</h2></div><button type="button" onClick={onRefresh} aria-label="Refresh public rooms">↻</button></div>{rooms.length ? <div className="room-mini-list">{rooms.map((room) => <button type="button" key={room.roomCode} onClick={() => onRoomPick(room.roomCode)}><strong>{room.roomCode}</strong><span>{room.playersCount}/{room.maxPlayers} players · {room.roundsToPlay} rounds</span><ChevronRight size={15} /></button>)}</div> : <div className="empty-rooms"><Users size={22} /><strong>No public table is waiting</strong><span>Create a private room and share its code instead.</span></div>}</div></section><section className="widgets-area" style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "flex-start", gap: "2rem", padding: "0 32px 60px", maxWidth: "1130px", margin: "0 auto" }}><PrismAnalyticsWidget /><FormForgeContactForm /></section></>;
+  return (
+    <>
+      {/* 🏛️ JAIPUR PALACE CHAMPION THEME BANNER */}
+      <section style={{
+        background: "radial-gradient(circle at top, #111827 0%, #030712 100%)",
+        padding: "3rem 1.5rem", borderBottom: "2px solid rgba(245, 158, 11, 0.3)",
+        position: "relative", overflow: "hidden", textAlign: "center", color: "#fff"
+      }}>
+        {/* Arch Overlays */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "radial-gradient(circle at center, transparent 40%, #030712 85%)",
+          pointerEvents: "none", zIndex: 1
+        }} />
 
+        {/* Top badges */}
+        <div style={{ display: "flex", justifyContent: "space-between", maxWidth: "1130px", margin: "0 auto", padding: "0 10px", position: "relative", zIndex: 2 }}>
+          <span style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "20px", padding: "6px 14px", fontSize: "0.75rem", fontWeight: 700 }}>👥 2-4 Players</span>
+          <span style={{ background: "rgba(245, 158, 11, 0.15)", border: "1px solid #f59e0b", borderRadius: "20px", padding: "6px 14px", fontSize: "0.75rem", fontWeight: 700, color: "#fbbf24" }}>👑 Free to Play</span>
+        </div>
 
+        {/* Game Title */}
+        <div style={{ position: "relative", zIndex: 2, marginTop: "1rem" }}>
+          <h1 style={{ fontSize: "2.8rem", color: "#fbbf24", margin: 0, fontFamily: "Georgia, serif", letterSpacing: "0.08em", textShadow: "0 0 15px rgba(245, 158, 11, 0.4)" }}>
+            ⚔️ CHOR SIPAHI ⚔️
+          </h1>
+          <p style={{ color: "#e2e8f0", fontSize: "1rem", marginTop: "4px", fontWeight: 500 }}>The Classic Indian Role Deduction Game</p>
+          <p style={{ color: "#94a3b8", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.15em", marginTop: "6px" }}>
+            4 Players | 3-10 Rounds | One Winner
+          </p>
+        </div>
+
+        {/* Character Slips Cards & Silhouettes Container */}
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-end", gap: "20px", margin: "2rem auto 1rem", maxWidth: "800px", minHeight: "220px", position: "relative", zIndex: 2 }}>
+          
+          {/* Card Slips */}
+          <div style={{ display: "flex", gap: "10px", position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)" }}>
+            <div style={{ background: "#f59e0b", color: "#000", padding: "4px 10px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: 800, border: "2px solid #fff", boxShadow: "0 4px 10px rgba(0,0,0,0.5)" }}>Raja 👑</div>
+            <div style={{ background: "#e2e8f0", color: "#000", padding: "4px 10px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: 800, border: "2px solid #fff", boxShadow: "0 4px 10px rgba(0,0,0,0.5)" }}>Mantri 📜</div>
+            <div style={{ background: "#ef4444", color: "#fff", padding: "4px 10px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: 800, border: "2px solid #fff", boxShadow: "0 4px 10px rgba(0,0,0,0.5)" }}>Chor 💰</div>
+            <div style={{ background: "#3b82f6", color: "#fff", padding: "4px 10px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: 800, border: "2px solid #fff", boxShadow: "0 4px 10px rgba(0,0,0,0.5)" }}>Sipahi 🛡️</div>
+          </div>
+
+          {/* Character 1: Raja */}
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "3.5rem", filter: "drop-shadow(0 0 10px #fbbf24)" }}>👑</div>
+            <div style={{ fontSize: "0.75rem", color: "#fbbf24", fontWeight: 800 }}>RAJA</div>
+          </div>
+          
+          {/* Character 2: Mantri */}
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "3.5rem", filter: "drop-shadow(0 0 10px #e2e8f0)" }}>📜</div>
+            <div style={{ fontSize: "0.75rem", color: "#e2e8f0", fontWeight: 800 }}>MANTRI</div>
+          </div>
+
+          {/* Character 3: Chor */}
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "3.5rem", filter: "drop-shadow(0 0 10px #ef4444)" }}>🥷</div>
+            <div style={{ fontSize: "0.75rem", color: "#ef4444", fontWeight: 800 }}>CHOR</div>
+          </div>
+
+          {/* Character 4: Sipahi */}
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "3.5rem", filter: "drop-shadow(0 0 10px #3b82f6)" }}>🛡️</div>
+            <div style={{ fontSize: "0.75rem", color: "#3b82f6", fontWeight: 800 }}>SIPAHI</div>
+          </div>
+
+        </div>
+
+        {/* Bottom indicator */}
+        <div style={{ position: "relative", zIndex: 2, fontSize: "0.75rem", color: "#94a3b8" }}>
+          ⏱️ 3-10 Rounds remaining
+        </div>
+      </section>
+
+      {/* 🕹️ FORMS / JOIN / CREATE AREAS */}
+      <section className="lobby-area" style={{ marginTop: "2rem" }}>
+        {/* Create Room Card */}
+        <div className="lobby-card">
+          <div className="lobby-card-heading">
+            <span className="card-number">01</span>
+            <div>
+              <p className="eyebrow">OPEN A TABLE</p>
+              <h2>Create private room</h2>
+            </div>
+          </div>
+          <form onSubmit={onCreate} className="lobby-form">
+            <label>
+              Your name
+              <input value={createName} onChange={(event) => setCreateName(event.target.value)} maxLength={24} placeholder="e.g. Aanya" required />
+            </label>
+            <label>
+              Select Game
+              <select value={selectedGame} onChange={(event) => setSelectedGame(event.target.value)}>
+                <option value="chor_sipahi">👑 Raja Mantri Chor Sipahi (4 Players)</option>
+                <option value="ludo">🎲 Rapid Ludo (2-4 Players)</option>
+                <option value="tic_tac_toe">❌⭕ Tic-Tac-Toe (2 Players)</option>
+                <option value="rps">✊✌️ Rock Paper Scissors (2 Players)</option>
+                <option value="connect_four">🔴 Connect Four (2 Players)</option>
+              </select>
+            </label>
+            <label>
+              How many rounds?
+              <select value={rounds} onChange={(event) => setRounds(Number(event.target.value) as 3 | 5 | 10)}>
+                <option value={3}>3 quick rounds</option>
+                <option value={5}>5 classic rounds</option>
+                <option value={10}>10 long-game rounds</option>
+              </select>
+            </label>
+            <button className="heritage-button" disabled={busy}>Create private room <ArrowRight size={17} /></button>
+          </form>
+        </div>
+
+        {/* Join Room Card */}
+        <div className="lobby-card join-card">
+          <div className="lobby-card-heading">
+            <span className="card-number">02</span>
+            <div>
+              <p className="eyebrow">HAVE A CODE?</p>
+              <h2>Join your friends</h2>
+            </div>
+          </div>
+          <form onSubmit={onJoin} className="lobby-form">
+            <label>
+              Room code
+              <input value={joinCode} onChange={(event) => setJoinCode(event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" placeholder="6 digits" required />
+            </label>
+            <label>
+              Your name
+              <input value={joinName} onChange={(event) => setJoinName(event.target.value)} maxLength={24} placeholder="e.g. Kabir" required />
+            </label>
+            <button className="outline-button" disabled={busy || joinCode.length !== 6}>Join room <ChevronRight size={17} /></button>
+          </form>
+        </div>
+
+        {/* Public Rooms List */}
+        <div className="open-rooms">
+          <div className="open-rooms-head">
+            <div>
+              <p className="eyebrow">OPTIONAL</p>
+              <h2>Open tables</h2>
+            </div>
+            <button type="button" onClick={onRefresh} aria-label="Refresh public rooms">↻</button>
+          </div>
+          {rooms.length ? (
+            <div className="room-mini-list">
+              {rooms.map((room) => (
+                <button type="button" key={room.roomCode} onClick={() => onRoomPick(room.roomCode)}>
+                  <strong>{room.roomCode}</strong>
+                  <span>{room.playersCount}/{room.maxPlayers} players · {room.roundsToPlay} rounds</span>
+                  <ChevronRight size={15} />
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-rooms">
+              <Users size={22} />
+              <strong>No public table is waiting</strong>
+              <span>Create a private room and share its code instead.</span>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Widgets Area */}
+      <section className="widgets-area" style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "flex-start", gap: "2rem", padding: "0 32px 60px", maxWidth: "1130px", margin: "0 auto" }}>
+        <PrismAnalyticsWidget />
+        <FormForgeContactForm />
+      </section>
+    </>
+  );
 }
 
 

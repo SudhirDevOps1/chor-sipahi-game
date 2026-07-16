@@ -11,45 +11,34 @@ interface MultiGamePanelProps {
   onStart: () => void;
 }
 
-/* ═══════════════════ DICE FACE COMPONENT ═══════════════════ */
-function DiceFace({ value }: { value: number }) {
-  const pipPositions: Record<number, number[][]> = {
-    1: [[1, 1]],
-    2: [[0, 2], [2, 0]],
-    3: [[0, 2], [1, 1], [2, 0]],
-    4: [[0, 0], [0, 2], [2, 0], [2, 2]],
-    5: [[0, 0], [0, 2], [1, 1], [2, 0], [2, 2]],
-    6: [[0, 0], [0, 1], [0, 2], [2, 0], [2, 1], [2, 2]],
-  };
-  const pips = pipPositions[value] || pipPositions[1];
-  return (
-    <div style={{
-      width: "68px", height: "68px", background: "linear-gradient(145deg, #ffffff, #e8e8e8)",
-      borderRadius: "14px", border: "3px solid #333", display: "grid",
-      gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(3, 1fr)",
-      padding: "8px", boxShadow: "0 6px 12px rgba(0,0,0,0.3), inset 0 1px 3px rgba(255,255,255,0.5)",
-    }}>
-      {Array.from({ length: 9 }).map((_, i) => {
-        const row = Math.floor(i / 3);
-        const col = i % 3;
-        const hasPip = pips.some(([r, c]) => r === row && c === col);
-        return (
-          <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {hasPip && (
-              <div style={{
-                width: "10px", height: "10px", borderRadius: "50%",
-                background: "radial-gradient(circle at 35% 35%, #555, #111)",
-                boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5)",
-              }} />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+/* ═══════════════════ LUDO PATH COORDINATES ═══════════════════ */
+// Standard 15x15 board path mapping from ludo.html
+const LUDO_PATH_COORDS = [
+  [6,1],[6,2],[6,3],[6,4],[6,5],
+  [5,6],[4,6],[3,6],[2,6],[1,6],[0,6],
+  [0,7],[0,8],
+  [1,8],[2,8],[3,8],[4,8],[5,8],
+  [6,9],[6,10],[6,11],[6,12],[6,13],[6,14],
+  [7,14],[8,14],
+  [8,13],[8,12],[8,11],[8,10],[8,9],
+  [9,8],[10,8],[11,8],[12,8],[13,8],[14,8],
+  [14,7],[14,6],
+  [13,6],[12,6],[11,6],[10,6],[9,6],
+  [8,5],[8,4],[8,3],[8,2],[8,1],[8,0],
+  [7,0],[6,0]
+];
 
-/* ═══════════════════ MAIN EXPORT ═══════════════════ */
+const LUDO_HOME_PATHS: Record<string, number[][]> = {
+  red: [[7,1],[7,2],[7,3],[7,4],[7,5],[7,6]],
+  green: [[1,7],[2,7],[3,7],[4,7],[5,7],[6,7]],
+  yellow: [[7,13],[7,12],[7,11],[7,10],[7,9],[7,8]],
+  blue: [[13,7],[12,7],[11,7],[10,7],[9,7],[8,7]]
+};
+
+const LUDO_START_POS = [0, 13, 39, 26]; // Red, Green, Blue, Yellow start steps
+
+const DICE_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+
 export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStart }: MultiGamePanelProps) {
   const gameType = state.gameType;
   const gameState = state.gameState;
@@ -66,14 +55,14 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
     if (gameState?.diceRoll && gameState.diceRoll !== prevDice.current) {
       playDiceRollSound();
       setDiceAnimating(true);
-      const t = setTimeout(() => setDiceAnimating(false), 600);
+      const t = setTimeout(() => setDiceAnimating(false), 500);
       prevDice.current = gameState.diceRoll;
       return () => clearTimeout(t);
     }
   }, [gameState?.diceRoll]);
-  useEffect(() => { if (gameState?.currentPlayerId) playMoveSound(); }, [gameState?.currentPlayerId, gameState?.board]);
+  useEffect(() => { if (gameState?.currentPlayerId) playMoveSound(); }, [gameState?.currentPlayerId]);
 
-  /* ── LOBBY ── */
+  /* ── LOBBY STATE ── */
   if (state.status === "waiting") {
     const isLudo = gameType === "ludo";
     const minP = isLudo ? 2 : (["tic_tac_toe", "rps", "connect_four"].includes(gameType) ? 2 : 4);
@@ -99,15 +88,6 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
               </div>
               <div style={{ fontSize: "0.85rem", fontWeight: 700 }}>{p.name}</div>
               {p.id === playerId && <span style={{ fontSize: "0.65rem", color: "#818cf8", fontWeight: 800 }}>YOU</span>}
-            </div>
-          ))}
-          {Array.from({ length: (isLudo ? 4 : minP) - state.players.length }).map((_, i) => (
-            <div key={`empty-${i}`} style={{
-              background: "rgba(255,255,255,0.02)", border: "2px dashed rgba(255,255,255,0.1)",
-              borderRadius: "14px", padding: "14px 20px", minWidth: "110px", color: "#475569",
-            }}>
-              <div style={{ fontSize: "1.8rem", marginBottom: "6px", opacity: 0.3 }}>👤</div>
-              <div style={{ fontSize: "0.75rem" }}>Waiting...</div>
             </div>
           ))}
         </div>
@@ -146,476 +126,421 @@ export function MultiGamePanel({ state, playerId, busy, onAction, isHost, onStar
     );
   }
 
-  if (!gameState) return <div className="phase-card" style={{ textAlign: "center", padding: "3rem" }}>Loading game board...</div>;
+  if (!gameState) return <div className="phase-card" style={{ textAlign: "center", padding: "3rem" }}>Loading...</div>;
 
-  /* ═══════════════════ 1. TIC-TAC-TOE — NEON GLOW BOARD ═══════════════════ */
+  /* ═══════════════════ 1. TIC-TAC-TOE — EXACT MATCH ═══════════════════ */
   if (gameType === "tic_tac_toe") {
     const isMyTurn = gameState.currentPlayerId === playerId;
-    const mySymbol = state.players[0]?.id === playerId ? "X" : "O";
+    const p1Score = gameState.player1Score ?? 0;
+    const p2Score = gameState.player2Score ?? 0;
+    const draws = gameState.drawsScore ?? 0;
+
     return (
-      <div className="phase-card" style={{ background: "linear-gradient(145deg, #0f172a, #0c0c1d)", borderRadius: "20px", padding: "2rem", color: "#fff", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
-        {/* Turn Indicator */}
-        <div style={{ display: "flex", justifyContent: "center", gap: "2rem", marginBottom: "1.5rem" }}>
-          {state.players.map((p, i) => {
-            const sym = i === 0 ? "X" : "O";
-            const active = gameState.currentPlayerId === p.id;
-            const symColor = sym === "X" ? "#0FF0FC" : "#FF6EC7";
-            return (
-              <div key={p.id} style={{
-                background: active ? "rgba(255,255,255,0.06)" : "transparent",
-                border: active ? `2px solid ${symColor}` : "2px solid transparent",
-                borderRadius: "12px", padding: "10px 20px", transition: "all 0.3s",
-                boxShadow: active ? `0 0 20px ${symColor}40` : "none",
-              }}>
-                <span style={{ fontSize: "1.5rem", fontWeight: 800, color: symColor, textShadow: active ? `0 0 10px ${symColor}` : "none" }}>{sym}</span>
-                <div style={{ fontSize: "0.7rem", color: "#94a3b8", marginTop: "4px" }}>{p.name}{p.id === playerId ? " (You)" : ""}</div>
-              </div>
-            );
-          })}
+      <div style={{
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        padding: "30px", borderRadius: "20px", maxWidth: "500px", width: "100%",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.35)", color: "#333", margin: "0 auto"
+      }}>
+        <h1 style={{ textAlign: "center", color: "#fff", marginBottom: "5px", fontSize: "2.2rem", fontWeight: 800 }}>🎮 Tic-Tac-Toe</h1>
+        <div style={{ textAlign: "center", color: "rgba(255,255,255,0.8)", marginBottom: "20px", fontSize: "0.9rem" }}>2026 Edition - Multiplayer Ready</div>
+        
+        {/* Score Board */}
+        <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "25px", padding: "16px", background: "#f8f9fa", borderRadius: "15px" }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "4px" }}>Player X ({state.players[0]?.name || "P1"})</div>
+            <div style={{ fontSize: "1.8rem", fontWeight: "bold", color: "#667eea" }}>{p1Score}</div>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "4px" }}>Draws</div>
+            <div style={{ fontSize: "1.8rem", fontWeight: "bold", color: "#888" }}>{draws}</div>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "4px" }}>Player O ({state.players[1]?.name || "P2"})</div>
+            <div style={{ fontSize: "1.8rem", fontWeight: "bold", color: "#764ba2" }}>{p2Score}</div>
+          </div>
         </div>
 
-        {/* Neon Board */}
+        {/* Status bar */}
         <div style={{
-          display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px",
-          margin: "0 auto", maxWidth: "300px", padding: "16px",
-          background: "rgba(255,255,255,0.03)", backdropFilter: "blur(10px)",
-          borderRadius: "16px", border: "1px solid rgba(255,255,255,0.1)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+          textAlign: "center", fontSize: "1.2rem", marginBottom: "20px", color: "#fff",
+          minHeight: "35px", fontWeight: "bold", textShadow: "0 2px 4px rgba(0,0,0,0.2)"
         }}>
+          {gameState.winnerId ? `🎉 Player ${gameState.winnerId === state.players[0]?.id ? "X" : "O"} jeet gaya!` : `Player ${gameState.currentPlayerId === state.players[0]?.id ? "X" : "O"} ki baari`}
+        </div>
+
+        {/* 3x3 Board Grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", marginBottom: "20px" }}>
           {gameState.board.map((cell: string | null, idx: number) => {
-            const cellColor = cell === "X" ? "#0FF0FC" : cell === "O" ? "#FF6EC7" : "transparent";
+            const isTaken = cell !== null;
+            const isWinner = gameState.winningLine?.includes(idx);
+            const isX = cell === "X";
+
+            // Standard cell styling based on tic-tac.html rules
+            let cellBg = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+            let color = "#fff";
+            if (isWinner) {
+              cellBg = "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)";
+            } else if (cell === "O") {
+              color = "#ffd700";
+            }
+
             return (
-              <button key={idx} type="button" disabled={busy || !isMyTurn || cell !== null}
+              <button key={idx} type="button" disabled={busy || !isMyTurn || isTaken}
                 onClick={() => handleAction({ type: "make_move", cellIndex: idx })}
                 style={{
-                  height: "88px", fontSize: "2.8rem", fontWeight: 800,
-                  fontFamily: "'Poppins', sans-serif",
-                  background: cell ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.02)",
-                  color: cellColor, border: "1px solid rgba(255,255,255,0.08)",
-                  borderRadius: "12px", cursor: (isMyTurn && !cell) ? "pointer" : "default",
-                  textShadow: cell ? `0 0 8px ${cellColor}, 0 0 20px ${cellColor}, 0 0 40px ${cellColor}` : "none",
-                  transition: "all 0.2s ease",
-                  boxShadow: cell ? `inset 0 0 20px ${cellColor}15` : "none",
-                }}>
-                {cell ?? ""}
+                  aspectRatio: "1", background: cellBg, border: "none", borderRadius: "15px",
+                  fontSize: "3rem", fontWeight: "bold", color: color, cursor: isTaken ? "not-allowed" : "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  boxShadow: "0 4px 15px rgba(102,126,234,0.3)", transition: "all 0.3s ease",
+                  transform: isWinner ? "scale(1.05)" : "none",
+                  animation: isWinner ? "win-pulse 0.8s ease infinite" : "none",
+                }}
+              >
+                {cell || ""}
               </button>
             );
           })}
         </div>
 
-        <p style={{ marginTop: "1.5rem", fontSize: "0.85rem", color: isMyTurn ? "#38bdf8" : "#64748b" }}>
-          {isMyTurn ? `Your turn! Place ${mySymbol}` : "Waiting for opponent..."}
-        </p>
+        {/* Controls */}
+        <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+          <button className="btn btn-primary" style={{ background: "#fff", color: "#667eea", padding: "12px 24px", borderRadius: "10px", fontWeight: "bold" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>Naya Game</button>
+          <button className="btn btn-secondary" style={{ background: "transparent", border: "2px solid #fff", color: "#fff", padding: "12px 24px", borderRadius: "10px", fontWeight: "bold" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>Score Reset</button>
+        </div>
       </div>
     );
   }
 
-  /* ═══════════════════ 2. CONNECT FOUR — PREMIUM BOARD ═══════════════════ */
+  /* ═══════════════════ 2. CONNECT FOUR — EXACT MATCH ═══════════════════ */
   if (gameType === "connect_four") {
     const isMyTurn = gameState.currentPlayerId === playerId;
-    const myColor = state.players[0]?.id === playerId ? "Red" : "Yellow";
+    const p1Score = gameState.player1Score ?? 0;
+    const p2Score = gameState.player2Score ?? 0;
+
     return (
-      <div className="phase-card" style={{ background: "linear-gradient(145deg, #0f172a, #0c0c1d)", borderRadius: "20px", padding: "2rem", color: "#fff", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
-        {/* Player indicators */}
-        <div style={{ display: "flex", justifyContent: "center", gap: "2rem", marginBottom: "1.5rem" }}>
-          {state.players.map((p, i) => {
-            const color = i === 0 ? "#ef4444" : "#eab308";
-            const active = gameState.currentPlayerId === p.id;
-            return (
-              <div key={p.id} style={{
-                display: "flex", alignItems: "center", gap: "10px",
-                background: active ? "rgba(255,255,255,0.06)" : "transparent",
-                border: active ? `2px solid ${color}` : "2px solid transparent",
-                borderRadius: "12px", padding: "10px 18px", transition: "all 0.3s",
-                boxShadow: active ? `0 0 15px ${color}40` : "none",
-              }}>
-                <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: color, boxShadow: `0 0 8px ${color}60` }} />
-                <span style={{ fontSize: "0.85rem", fontWeight: 700 }}>{p.name}{p.id === playerId ? " (You)" : ""}</span>
-              </div>
-            );
-          })}
+      <div style={{
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        background: "linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)",
+        padding: "30px", borderRadius: "20px", maxWidth: "560px", width: "100%",
+        boxShadow: "0 25px 70px rgba(0, 0, 0, 0.4)", color: "#333", margin: "0 auto"
+      }}>
+        <h1 style={{ textAlign: "center", color: "#fff", marginBottom: "8px", fontSize: "2.3rem", fontWeight: 800 }}>🔴 Connect Four 🟡</h1>
+        <div style={{ textAlign: "center", color: "rgba(255,255,255,0.7)", marginBottom: "20px", fontSize: "0.9rem" }}>4 in a row to win • 2026 Edition</div>
+
+        {/* Scoreboard */}
+        <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "20px", padding: "15px", background: "#f8f9fa", borderRadius: "12px" }}>
+          <div style={{ textShadow: "none" }}>
+            <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "5px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ display: "inline-block", width: "14px", height: "14px", borderRadius: "50%", background: "radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a)" }}></span>
+              Red ({state.players[0]?.name || "P1"})
+            </div>
+            <div style={{ fontSize: "1.8rem", fontWeight: "bold", color: "#2c5364", textAlign: "center" }}>{p1Score}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "5px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ display: "inline-block", width: "14px", height: "14px", borderRadius: "50%", background: "radial-gradient(circle at 30% 30%, #ffe066, #f59f00)" }}></span>
+              Yellow ({state.players[1]?.name || "P2"})
+            </div>
+            <div style={{ fontSize: "1.8rem", fontWeight: "bold", color: "#2c5364", textAlign: "center" }}>{p2Score}</div>
+          </div>
         </div>
 
-        <div style={{ margin: "0 auto", maxWidth: "380px" }}>
-          {/* Drop Buttons */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "6px", marginBottom: "8px" }}>
-            {Array.from({ length: 7 }).map((_, colIdx) => (
-              <button key={colIdx} type="button" disabled={busy || !isMyTurn || gameState.board[0][colIdx] !== null}
-                onClick={() => handleAction({ type: "make_move", colIndex: colIdx })}
-                style={{
-                  padding: "6px 0", fontSize: "14px", fontWeight: "bold",
-                  background: isMyTurn ? "rgba(37,99,235,0.8)" : "rgba(37,99,235,0.3)",
-                  color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer",
-                  transition: "all 0.2s",
-                }}>▼</button>
-            ))}
-          </div>
+        {/* Turn description */}
+        <div style={{ textAlign: "center", fontSize: "1.2rem", marginBottom: "15px", color: "#fff", fontWeight: "bold" }}>
+          {gameState.winnerId ? `🎉 ${gameState.winnerId === state.players[0]?.id ? "🔴 Red" : "🟡 Yellow"} jeet gaya!` : `${gameState.currentPlayerId === state.players[0]?.id ? "🔴 Red" : "🟡 Yellow"} ka turn`}
+        </div>
 
-          {/* Board */}
-          <div style={{
-            background: "linear-gradient(180deg, #1e3a8a, #1e40af)",
-            padding: "12px", borderRadius: "16px",
-            boxShadow: "0 10px 40px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1)",
-            border: "3px solid #1d4ed8",
-          }}>
+        {/* Board grid wrapper (matching connect-for.html exactly) */}
+        <div style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2c5364 100%)", padding: "12px", borderRadius: "15px", marginBottom: "20px", boxShadow: "inset 0 4px 10px rgba(0, 0, 0, 0.3)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gridTemplateRows: "repeat(6, 1fr)", gap: "6px", aspectRatio: "7/6" }}>
             {gameState.board.map((row: (string | null)[], rIdx: number) => (
-              <div key={rIdx} style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "6px", marginBottom: rIdx < 5 ? "6px" : "0" }}>
-                {row.map((cell: string | null, cIdx: number) => (
-                  <div key={cIdx} style={{
-                    aspectRatio: "1", borderRadius: "50%",
-                    background: cell === "R"
-                      ? "radial-gradient(circle at 35% 35%, #fca5a5, #ef4444 50%, #b91c1c)"
-                      : cell === "Y"
-                        ? "radial-gradient(circle at 35% 35%, #fef08a, #eab308 50%, #a16207)"
-                        : "radial-gradient(circle at 50% 50%, #1e293b, #0f172a)",
-                    border: cell ? "none" : "2px solid #1d4ed8",
-                    boxShadow: cell
-                      ? `inset 0 -3px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)`
-                      : "inset 0 4px 8px rgba(0,0,0,0.5)",
-                    transition: "all 0.35s ease",
-                  }} />
-                ))}
-              </div>
+              row.map((cell: string | null, cIdx: number) => {
+                const index = rIdx * 7 + cIdx;
+                const isWinner = gameState.winningLine?.includes(index);
+                
+                let cellBg = "#0f2027";
+                if (cell === "R") {
+                  cellBg = "radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a)";
+                } else if (cell === "Y") {
+                  cellBg = "radial-gradient(circle at 30% 30%, #ffe066, #f59f00)";
+                }
+
+                return (
+                  <div key={index} onClick={() => handleAction({ type: "make_move", colIndex: cIdx })}
+                    style={{
+                      background: cellBg, borderRadius: "50%", cursor: (busy || !isMyTurn) ? "default" : "pointer",
+                      boxShadow: "inset 0 4px 8px rgba(0, 0, 0, 0.4)",
+                      animation: cell ? "drop 0.4s ease-out" : "none",
+                      position: "relative"
+                    }}
+                    className={`${isWinner ? "winner" : ""}`}
+                  />
+                );
+              })
             ))}
           </div>
         </div>
 
-        <p style={{ marginTop: "1.2rem", fontSize: "0.85rem", color: isMyTurn ? "#38bdf8" : "#64748b" }}>
-          {isMyTurn ? `Your turn! Drop ${myColor}` : "Waiting for opponent..."}
-        </p>
+        {/* Controls */}
+        <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+          <button className="btn btn-primary" style={{ background: "#fff", color: "#2c5364", padding: "12px 24px", borderRadius: "10px", fontWeight: "bold", border: "none" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>Naya Game</button>
+          <button className="btn btn-secondary" style={{ background: "transparent", border: "2px solid #fff", color: "#fff", padding: "12px 24px", borderRadius: "10px", fontWeight: "bold" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>Score Reset</button>
+        </div>
       </div>
     );
   }
 
-  /* ═══════════════════ 3. ROCK PAPER SCISSORS — POKER CHIP DESIGN ═══════════════════ */
+  /* ═══════════════════ 3. ROCK PAPER SCISSORS — EXACT MATCH ═══════════════════ */
   if (gameType === "rps") {
     const p1 = gameState.player1Id === playerId;
     const myChoice = p1 ? gameState.player1Choice : gameState.player2Choice;
     const hasChosen = myChoice !== null;
     const showResults = gameState.player1Choice && gameState.player2Choice;
+    const p1Score = gameState.player1Score ?? 0;
+    const p2Score = gameState.player2Score ?? 0;
+    const draws = gameState.drawsScore ?? 0;
 
-    const chipColors: Record<string, { from: string; to: string; shadow: string }> = {
-      rock: { from: "hsl(349, 71%, 52%)", to: "hsl(349, 70%, 56%)", shadow: "hsl(349, 68%, 34%)" },
-      paper: { from: "hsl(230, 89%, 62%)", to: "hsl(230, 89%, 65%)", shadow: "hsl(230, 75%, 40%)" },
-      scissors: { from: "hsl(39, 89%, 49%)", to: "hsl(40, 84%, 53%)", shadow: "hsl(39, 80%, 32%)" },
-    };
-    const icons: Record<string, string> = { rock: "✊", paper: "✋", scissors: "✌️" };
-
-    const PokerChip = ({ choice, size, isWinner, onClick, disabled }: { choice: string; size: number; isWinner?: boolean; onClick?: () => void; disabled?: boolean }) => {
-      const c = chipColors[choice];
-      return (
-        <button type="button" onClick={onClick} disabled={disabled}
-          style={{
-            width: `${size}px`, height: `${size}px`, borderRadius: "50%",
-            background: `linear-gradient(180deg, ${c.from}, ${c.to})`,
-            display: "flex", justifyContent: "center", alignItems: "center",
-            border: "none", cursor: onClick && !disabled ? "pointer" : "default",
-            boxShadow: isWinner
-              ? `0 8px 0 ${c.shadow}, 0 0 0 20px rgba(255,255,255,0.04), 0 0 0 40px rgba(255,255,255,0.03), 0 0 0 60px rgba(255,255,255,0.02)`
-              : `0 8px 0 ${c.shadow}`,
-            transition: "all 0.25s ease", position: "relative",
-          }}>
-          <div style={{
-            width: "78%", height: "78%", borderRadius: "50%",
-            background: "linear-gradient(180deg, #f3f3f3, #dadada)",
-            boxShadow: "inset 0 6px 0 rgba(0,0,0,0.08)",
-            display: "flex", justifyContent: "center", alignItems: "center",
-            fontSize: `${size * 0.32}px`,
-          }}>
-            {icons[choice]}
-          </div>
-        </button>
-      );
-    };
+    const icons: Record<string, string> = { rock: '✊', paper: '✋', scissors: '✌️' };
+    const myIcon = myChoice ? icons[myChoice] : "❓";
+    const opponentChoice = p1 ? gameState.player2Choice : gameState.player1Choice;
+    const oppIcon = showResults && opponentChoice ? icons[opponentChoice] : "❓";
 
     return (
-      <div className="phase-card" style={{
-        background: "radial-gradient(circle at top, hsl(214, 47%, 23%), hsl(237, 49%, 15%))",
-        borderRadius: "20px", padding: "2rem", color: "#fff",
-        border: "1px solid rgba(255,255,255,0.08)", textAlign: "center",
-        minHeight: "420px",
+      <div style={{
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        background: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+        padding: "40px 30px", borderRadius: "25px", maxWidth: "600px", width: "100%",
+        boxShadow: "0 25px 70px rgba(0, 0, 0, 0.25)", color: "#333", margin: "0 auto"
       }}>
-        {/* Score Header */}
-        <div style={{
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          border: "3px solid hsl(217, 16%, 45%)", borderRadius: "12px",
-          padding: "12px 20px", marginBottom: "2rem",
-        }}>
-          <div style={{ textAlign: "left" }}>
-            <div style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.15em" }}>ROCK</div>
-            <div style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.15em" }}>PAPER</div>
-            <div style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.15em" }}>SCISSORS</div>
+        <h1 style={{ textAlign: "center", color: "#fff", marginBottom: "8px", fontSize: "3rem", textShadow: "0 2px 5px rgba(0,0,0,0.15)" }}>✊ ✋ ✌️</h1>
+        <div style={{ textAlign: "center", color: "rgba(255,255,255,0.9)", marginBottom: "25px", fontSize: "0.9rem" }}>Rock Paper Scissors 2026</div>
+
+        {/* Score board */}
+        <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "30px", padding: "20px", background: "linear-gradient(135deg, #fff5f7 0%, #fffef5 100%)", borderRadius: "15px" }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "1px" }}>Aap</div>
+            <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#fa709a" }}>{p1 ? p1Score : p2Score}</div>
           </div>
-          <div style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", color: "#94a3b8" }}>ROUND {gameState.round}</div>
-          <div style={{
-            background: "#fff", borderRadius: "8px", padding: "8px 24px", textAlign: "center",
-          }}>
-            <div style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.1em", color: "hsl(229, 64%, 46%)" }}>SCORE</div>
-            <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "hsl(229, 25%, 31%)", lineHeight: 1 }}>
-              {gameState.player1Score} - {gameState.player2Score}
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "1px" }}>Draw</div>
+            <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#999" }}>{draws}</div>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "1px" }}>Computer</div>
+            <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#f59e0b" }}>{p1 ? p2Score : p1Score}</div>
+          </div>
+        </div>
+
+        {/* Battle Arena */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "20px", marginBottom: "25px", padding: "20px", background: "#f8f9fa", borderRadius: "15px", minHeight: "150px" }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.9rem", fontWeight: 600, color: "#666", marginBottom: "10px" }}>AAP</div>
+            <div className={`fighter-icon ${diceAnimating ? "shake" : ""}`} style={{ fontSize: "4rem", minHeight: "80px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {myIcon}
+            </div>
+          </div>
+          <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#fa709a" }}>VS</div>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "0.9rem", fontWeight: 600, color: "#666", marginBottom: "10px" }}>OPPONENT</div>
+            <div className={`fighter-icon ${diceAnimating ? "shake" : ""}`} style={{ fontSize: "4rem", minHeight: "80px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {oppIcon}
             </div>
           </div>
         </div>
 
-        {!showResults ? (
-          <div style={{ margin: "1rem 0" }}>
-            {hasChosen ? (
-              <div style={{ padding: "3rem 2rem" }}>
-                <PokerChip choice={myChoice} size={130} />
-                <p style={{ marginTop: "1.5rem", color: "#94a3b8", fontSize: "0.9rem" }}>
-                  Waiting for opponent to choose...
-                </p>
-              </div>
-            ) : (
-              <div>
-                <p style={{ color: "#94a3b8", marginBottom: "1.5rem", fontSize: "0.9rem" }}>Choose your weapon:</p>
-                {/* Triangle layout */}
-                <div style={{ position: "relative", width: "320px", height: "280px", margin: "0 auto" }}>
-                  {/* Top row: Paper & Scissors */}
-                  <div style={{ position: "absolute", top: 0, left: "15px" }}>
-                    <PokerChip choice="paper" size={120} onClick={() => handleAction({ type: "make_choice", choice: "paper" })} disabled={busy} />
-                    <div style={{ fontSize: "0.7rem", marginTop: "8px", fontWeight: 700, letterSpacing: "0.1em" }}>PAPER</div>
-                  </div>
-                  <div style={{ position: "absolute", top: 0, right: "15px" }}>
-                    <PokerChip choice="scissors" size={120} onClick={() => handleAction({ type: "make_choice", choice: "scissors" })} disabled={busy} />
-                    <div style={{ fontSize: "0.7rem", marginTop: "8px", fontWeight: 700, letterSpacing: "0.1em" }}>SCISSORS</div>
-                  </div>
-                  {/* Bottom center: Rock */}
-                  <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)" }}>
-                    <PokerChip choice="rock" size={120} onClick={() => handleAction({ type: "make_choice", choice: "rock" })} disabled={busy} />
-                    <div style={{ fontSize: "0.7rem", marginTop: "8px", fontWeight: 700, letterSpacing: "0.1em" }}>ROCK</div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          /* Results display */
-          <div style={{ margin: "1rem 0" }}>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "2rem", flexWrap: "wrap" }}>
-              {/* Player 1 */}
-              <div style={{ textAlign: "center" }}>
-                <p style={{ fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.15em", color: "#94a3b8", marginBottom: "12px" }}>
-                  {state.players[0]?.name?.toUpperCase()} PICKED
-                </p>
-                <PokerChip choice={gameState.player1Choice} size={130} isWinner={gameState.roundWinnerId === state.players[0]?.id} />
-              </div>
-
-              {/* Result text */}
-              <div style={{ textAlign: "center", minWidth: "120px" }}>
-                <h2 style={{
-                  fontSize: "1.8rem", fontWeight: 800, margin: "0 0 1rem",
-                  color: gameState.roundWinnerId === "draw" ? "#94a3b8" : "#fff",
-                  textShadow: gameState.roundWinnerId !== "draw" ? "0 0 20px rgba(255,255,255,0.3)" : "none",
-                }}>
-                  {gameState.roundWinnerId === "draw" ? "DRAW" : gameState.roundWinnerId === playerId ? "YOU WIN" : "YOU LOSE"}
-                </h2>
-                {isHost && (
-                  <button type="button" disabled={busy} onClick={() => handleAction({ type: "next_round" })}
-                    style={{ padding: "10px 28px", background: "#fff", color: "hsl(229, 25%, 31%)", border: "none", borderRadius: "10px", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.15em", cursor: "pointer" }}>
-                    NEXT ROUND
-                  </button>
-                )}
-              </div>
-
-              {/* Player 2 */}
-              <div style={{ textAlign: "center" }}>
-                <p style={{ fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.15em", color: "#94a3b8", marginBottom: "12px" }}>
-                  {state.players[1]?.name?.toUpperCase()} PICKED
-                </p>
-                <PokerChip choice={gameState.player2Choice} size={130} isWinner={gameState.roundWinnerId === state.players[1]?.id} />
-              </div>
+        {/* Dynamic Hindi message text */}
+        {(() => {
+          let resultText = "Apna chunav karein!";
+          let resultClass = "";
+          if (showResults) {
+            const c1 = myChoice === "rock" ? "Patthar" : myChoice === "paper" ? "Kagaz" : "Kainchi";
+            const c2 = opponentChoice === "rock" ? "Patthar" : opponentChoice === "paper" ? "Kagaz" : "Kainchi";
+            const win = gameState.roundWinnerId === playerId;
+            const draw = gameState.roundWinnerId === "draw";
+            if (win) {
+              resultText = `🎉 Aap jeet gaye! ${c1} beats ${c2}`;
+              resultClass = "win";
+            } else if (draw) {
+              resultText = `🤝 Draw! Dono ne ${c1} chuna`;
+              resultClass = "draw";
+            } else {
+              resultText = `😢 Aap haar gaye! ${c2} beats ${c1}`;
+              resultClass = "lose";
+            }
+          }
+          return (
+            <div className={`result ${resultClass}`} style={{ textAlign: "center", fontSize: "1.3rem", fontWeight: 600, minHeight: "35px", marginBottom: "25px", color: resultClass === "win" ? "#22c55e" : resultClass === "lose" ? "#ef4444" : "#f59e0b" }}>
+              {resultText}
             </div>
+          );
+        })()}
+
+        {/* Controls choices */}
+        {!hasChosen && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "20px" }}>
+            <button className="choice-btn" onClick={() => handleAction({ type: "make_choice", choice: "rock" })} disabled={busy}
+              style={{ background: "#fff", border: "3px solid transparent", borderRadius: "15px", padding: "20px 10px", cursor: "pointer", fontSize: "3rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", boxShadow: "0 4px 15px rgba(0,0,0,0.08)" }}>
+              <span>✊</span><span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#666" }}>Patthar</span>
+            </button>
+            <button className="choice-btn" onClick={() => handleAction({ type: "make_choice", choice: "paper" })} disabled={busy}
+              style={{ background: "#fff", border: "3px solid transparent", borderRadius: "15px", padding: "20px 10px", cursor: "pointer", fontSize: "3rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", boxShadow: "0 4px 15px rgba(0,0,0,0.08)" }}>
+              <span>✋</span><span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#666" }}>Kagaz</span>
+            </button>
+            <button className="choice-btn" onClick={() => handleAction({ type: "make_choice", choice: "scissors" })} disabled={busy}
+              style={{ background: "#fff", border: "3px solid transparent", borderRadius: "15px", padding: "20px 10px", cursor: "pointer", fontSize: "3rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", boxShadow: "0 4px 15px rgba(0,0,0,0.08)" }}>
+              <span>✌️</span><span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#666" }}>Kainchi</span>
+            </button>
           </div>
         )}
+
+        <button className="btn-reset" onClick={() => handleAction({ type: "restart" })} disabled={busy}
+          style={{ width: "100%", padding: "12px", background: "#fff", color: "#fa709a", borderRadius: "12px", fontSize: "1rem", fontWeight: "bold", border: "none", cursor: "pointer", textTransform: "uppercase" }}>
+          Score Reset
+        </button>
       </div>
     );
   }
 
-  /* ═══════════════════ 4. LUDO — VISUAL TRACK BOARD ═══════════════════ */
+  /* ═══════════════════ 4. LUDO — EXACT MATCH ═══════════════════ */
   if (gameType === "ludo") {
     const isMyTurn = gameState.currentPlayerId === playerId;
-    const tokens = gameState.playerTokens[playerId] || [-1, -1];
-    const colors = ["#E53935", "#1E88E5", "#43A047", "#FDD835"];
-    const colorNames = ["Red", "Blue", "Green", "Yellow"];
+    const colors = ["red", "green", "yellow", "blue"];
+    const activeColor = colors[state.players.findIndex(p => p.id === gameState.currentPlayerId) % 4] || "red";
 
     return (
-      <div className="phase-card" style={{
-        background: "linear-gradient(145deg, #1a1a2e, #16213e)",
-        borderRadius: "20px", padding: "2rem", color: "#fff",
-        border: "1px solid rgba(255,255,255,0.08)",
+      <div style={{
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        background: "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)",
+        padding: "20px", borderRadius: "20px", maxWidth: "560px", width: "100%",
+        boxShadow: "0 25px 70px rgba(0, 0, 0, 0.4)", color: "#333", margin: "0 auto"
       }}>
-        <p style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.15em", color: "#10b981", textTransform: "uppercase" as const, textAlign: "center" }}>🎲 LUDO BOARD</p>
+        <h1 style={{ textAlign: "center", color: "#fff", marginBottom: "5px", fontSize: "2rem", fontWeight: 800 }}>🎲 Ludo King 🎲</h1>
+        <div style={{ textAlign: "center", color: "rgba(255,255,255,0.8)", marginBottom: "15px", fontSize: "0.85rem" }}>2026 Edition • 4 Players Local</div>
 
-        {/* Player info cards row */}
-        <div style={{ display: "flex", justifyContent: "center", gap: "10px", margin: "1rem 0", flexWrap: "wrap" }}>
-          {state.players.map((p, pIdx) => {
-            const c = colors[pIdx % 4];
-            const active = gameState.currentPlayerId === p.id;
-            const pt = gameState.playerTokens[p.id] || [-1, -1];
-            const homeCount = pt.filter((t: number) => t >= 30).length;
-            return (
-              <div key={p.id} style={{
-                background: active ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.03)",
-                backdropFilter: "blur(10px)",
-                border: active ? `2px solid ${c}` : "1px solid rgba(255,255,255,0.08)",
-                borderRadius: "12px", padding: "10px 14px", minWidth: "90px", textAlign: "center",
-                boxShadow: active ? `0 0 15px ${c}40` : "none",
-                transition: "all 0.3s", opacity: active ? 1 : 0.7,
-              }}>
-                <div style={{ display: "flex", justifyContent: "center", gap: "4px", marginBottom: "6px" }}>
-                  {pt.map((pos: number, ti: number) => (
-                    <div key={ti} style={{
-                      width: "14px", height: "14px", borderRadius: "50%",
-                      background: pos >= 30 ? "gold" : c,
-                      border: pos >= 30 ? "2px solid #b8860b" : `2px solid ${c}`,
-                      opacity: pos === -1 ? 0.3 : 1,
-                    }} />
-                  ))}
-                </div>
-                <div style={{ fontSize: "0.75rem", fontWeight: 700 }}>{p.name}</div>
-                {active && <div style={{ fontSize: "0.6rem", color: c, fontWeight: 800 }}>TURN</div>}
-                {homeCount > 0 && <div style={{ fontSize: "0.6rem", color: "gold" }}>🏠 {homeCount}</div>}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Dice + Roll area */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1.5rem", margin: "1.5rem 0" }}>
-          <div style={{
-            transform: diceAnimating ? "rotate(720deg) scale(1.1)" : "rotate(0deg) scale(1)",
-            transition: diceAnimating ? "transform 0.6s ease-out" : "transform 0.3s ease",
-          }}>
-            <DiceFace value={gameState.diceRoll || 1} />
+        {/* Turn & Dice Bar */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f8f9fa", padding: "10px 15px", borderRadius: "12px", marginBottom: "15px", gap: "10px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: "bold" }}>
+            <div style={{
+              width: "20px", height: "20px", borderRadius: "50%",
+              background: activeColor === "red" ? "#c92a2a" : activeColor === "green" ? "#2b8a3e" : activeColor === "yellow" ? "#e67700" : "#1864ab"
+            }} />
+            <span>{activeColor.charAt(0).toUpperCase() + activeColor.slice(1)} ka turn</span>
           </div>
-          {isMyTurn && !gameState.hasRolled && (
-            <button type="button" disabled={busy} onClick={() => handleAction({ type: "roll_die" })}
-              style={{
-                padding: "14px 28px", background: "linear-gradient(135deg, #10b981, #059669)",
-                border: "none", color: "#fff", fontWeight: 700, borderRadius: "12px",
-                cursor: "pointer", fontSize: "0.95rem",
-                boxShadow: "0 6px 20px rgba(16,185,129,0.4)",
-              }}>
-              Roll Dice 🎲
-            </button>
-          )}
+
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ width: "45px", height: "45px", background: "white", border: "2px solid #333", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.8rem", fontWeight: "bold" }}>
+              {gameState.diceRoll ? DICE_FACES[gameState.diceRoll - 1] : "?"}
+            </div>
+            {isMyTurn && !gameState.hasRolled && (
+              <button style={{ padding: "8px 16px", background: "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)", color: "white", border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer" }} onClick={() => handleAction({ type: "roll_die" })}>
+                Roll
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Visual Track Board — 10x3 grid showing the 30-step path */}
-        <div style={{ margin: "1rem auto", maxWidth: "500px" }}>
-          <div style={{
-            display: "grid", gridTemplateColumns: "repeat(10, 1fr)", gap: "4px",
-            background: "rgba(255,255,255,0.03)", padding: "12px", borderRadius: "14px",
-            border: "2px solid rgba(255,255,255,0.08)",
-          }}>
-            {Array.from({ length: 30 }).map((_, stepIdx) => {
-              const stepNum = stepIdx + 1;
-              const playersHere: { color: string; label: string }[] = [];
+        {/* Board Grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(15, 1fr)", gridTemplateRows: "repeat(15, 1fr)", gap: "1px", background: "#333", padding: "2px", borderRadius: "10px", position: "relative", marginBottom: "15px", aspectRatio: "1" }}>
+          {Array.from({ length: 15 }).map((_, r) => {
+            const row = r;
+            return Array.from({ length: 15 }).map((_, c) => {
+              const col = c;
+
+              // Color bases
+              let cellClass = "";
+              let bg = "#fff";
+              if (row < 6 && col < 6) bg = "#ff6b6b";
+              else if (row < 6 && col > 8) bg = "#51cf66";
+              else if (row > 8 && col > 8) bg = "#ffd43b";
+              else if (row > 8 && col < 6) bg = "#4dabf7";
+              else if (row >= 6 && row <= 8 && col >= 6 && col <= 8) {
+                if (row === 7 && col === 7) bg = "conic-gradient(#ff6b6b 0 25%, #51cf66 25% 50%, #ffd43b 50% 75%, #4dabf7 75% 100%)";
+                else bg = "#f1f3f5";
+              } else {
+                // Colored Paths
+                const isHomeRed = row === 7 && col >= 1 && col <= 6;
+                const isHomeGreen = col === 7 && row >= 1 && row <= 6;
+                const isHomeYellow = row === 7 && col >= 8 && col <= 13;
+                const isHomeBlue = col === 7 && row >= 8 && row <= 13;
+
+                if (isHomeRed) bg = "#ffc9c9";
+                else if (isHomeGreen) bg = "#d3f9d8";
+                else if (isHomeYellow) bg = "#fff3bf";
+                else if (isHomeBlue) bg = "#d0ebff";
+                else if (row === 6 && col === 1) bg = "#ffc9c9"; // Red start
+                else if (row === 1 && col === 8) bg = "#d3f9d8"; // Green start
+                else if (row === 8 && col === 13) bg = "#fff3bf"; // Yellow start
+                else if (row === 13 && col === 6) bg = "#d0ebff"; // Blue start
+              }
+
+              // Stars & Safe cells
+              const isSafe = (row === 6 && col === 1) || (row === 8 && col === 1) || (row === 1 && col === 6) || (row === 1 && col === 8) || (row === 6 && col === 13) || (row === 8 && col === 13) || (row === 13 && col === 6) || (row === 13 && col === 8);
+
+              // Check if any player's token is on this cell
+              const matchingTokens: { playerIndex: number; tokenIndex: number; color: string; isMovable: boolean }[] = [];
               state.players.forEach((p, pIdx) => {
                 const pt = gameState.playerTokens[p.id] || [-1, -1];
-                if (pt[0] === stepNum) playersHere.push({ color: colors[pIdx % 4], label: "T1" });
-                if (pt[1] === stepNum) playersHere.push({ color: colors[pIdx % 4], label: "T2" });
-              });
-              const isGoal = stepNum === 30;
-              const isSafe = [1, 8, 14, 22].includes(stepNum);
-              return (
-                <div key={stepIdx} title={`Step ${stepNum}`} style={{
-                  height: "38px", borderRadius: "8px", position: "relative",
-                  background: isGoal ? "linear-gradient(135deg, #10b981, #059669)" : isSafe ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.04)",
-                  border: isGoal ? "2px solid #059669" : isSafe ? "1px solid rgba(16,185,129,0.3)" : "1px solid rgba(255,255,255,0.06)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "all 0.3s",
-                }}>
-                  {isGoal ? (
-                    <span style={{ fontSize: "14px" }}>🏁</span>
-                  ) : isSafe ? (
-                    <span style={{ fontSize: "10px", color: "#10b981", fontWeight: 800 }}>★</span>
-                  ) : (
-                    <span style={{ fontSize: "8px", color: "rgba(255,255,255,0.15)", fontWeight: 700 }}>{stepNum}</span>
-                  )}
+                const pColor = colors[pIdx % 4];
+                pt.forEach((stepPos: number, tIdx: number) => {
+                  if (stepPos >= 0 && stepPos <= 30) {
+                    // Map step to [row, col]
+                    let targetCoords = null;
+                    if (stepPos >= 0 && stepPos < 24) {
+                      const perimeterIndex = (LUDO_START_POS[pIdx % 4] + stepPos) % 52;
+                      targetCoords = LUDO_PATH_COORDS[perimeterIndex];
+                    } else if (stepPos >= 24 && stepPos < 30) {
+                      const stretchIndex = stepPos - 24;
+                      targetCoords = LUDO_HOME_PATHS[pColor]?.[stretchIndex];
+                    } else if (stepPos === 30) {
+                      targetCoords = [7, 7]; // Goal center
+                    }
 
-                  {/* Tokens on this cell */}
-                  {playersHere.length > 0 && (
-                    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: "2px" }}>
-                      {playersHere.map((t, ti) => (
-                        <div key={ti} title={t.label} style={{
-                          width: "14px", height: "14px", borderRadius: "50%",
-                          background: `radial-gradient(circle at 35% 35%, ${t.color}aa, ${t.color})`,
-                          border: "2px solid #fff", boxShadow: `0 0 6px ${t.color}`,
-                          zIndex: 2,
-                        }} />
-                      ))}
-                    </div>
-                  )}
+                    if (targetCoords && targetCoords[0] === row && targetCoords[1] === col) {
+                      const isMovable = isMyTurn && p.id === playerId && !((stepPos === -1 && gameState.diceRoll !== 6) || (stepPos + (gameState.diceRoll || 0) > 30));
+                      matchingTokens.push({
+                        playerIndex: pIdx,
+                        tokenIndex: tIdx,
+                        color: pColor,
+                        isMovable
+                      });
+                    }
+                  }
+                });
+              });
+
+              return (
+                <div key={`${row}-${col}`} style={{
+                  gridArea: `${row + 1} / ${col + 1} / ${row + 2} / ${col + 2}`,
+                  background: bg, display: "flex", alignItems: "center", justifyContent: "center",
+                  position: "relative", border: "1px solid rgba(0,0,0,0.03)"
+                }}>
+                  {isSafe && <span style={{ fontSize: "0.65rem", opacity: 0.5 }}>⭐</span>}
+                  {matchingTokens.map((t, ti) => (
+                    <button key={ti} type="button" disabled={!t.isMovable}
+                      onClick={() => handleAction({ type: "move_token", tokenIndex: t.tokenIndex })}
+                      style={{
+                        position: "absolute", width: "80%", height: "80%", borderRadius: "50%",
+                        border: "2px solid #fff", boxShadow: t.isMovable ? "0 0 10px #fff" : "0 2px 4px rgba(0,0,0,0.3)",
+                        background: t.color === "red" ? "radial-gradient(circle at 30% 30%, #ff8787, #c92a2a)" : t.color === "green" ? "radial-gradient(circle at 30% 30%, #8ce99a, #2b8a3e)" : t.color === "yellow" ? "radial-gradient(circle at 30% 30%, #ffe066, #e67700)" : "radial-gradient(circle at 30% 30%, #74c0fc, #1864ab)",
+                        color: t.color === "yellow" ? "#333" : "#fff", fontSize: "0.55rem", fontWeight: "bold",
+                        cursor: t.isMovable ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center",
+                        zIndex: 10, transform: t.isMovable ? "scale(1.15)" : "none",
+                      }}
+                    >
+                      {t.tokenIndex + 1}
+                    </button>
+                  ))}
                 </div>
               );
-            })}
-          </div>
-        </div>
-
-        {/* Yard status */}
-        <div style={{ display: "flex", justifyContent: "center", gap: "8px", margin: "1rem 0", flexWrap: "wrap" }}>
-          {state.players.map((p, pIdx) => {
-            const pt = gameState.playerTokens[p.id] || [-1, -1];
-            const c = colors[pIdx % 4];
-            const inYard = pt.filter((t: number) => t === -1).length;
-            if (inYard === 0) return null;
-            return (
-              <div key={p.id} style={{
-                background: "rgba(255,255,255,0.04)", padding: "6px 12px", borderRadius: "8px",
-                display: "flex", alignItems: "center", gap: "6px", border: `1px solid ${c}30`,
-                fontSize: "0.75rem",
-              }}>
-                <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: c }} />
-                {p.name}: <strong>{inYard} in yard</strong>
-              </div>
-            );
+            });
           })}
         </div>
 
-        {/* Move Token Buttons */}
-        {isMyTurn && gameState.hasRolled && (
-          <div style={{
-            background: "rgba(255,255,255,0.04)", padding: "1.2rem", borderRadius: "14px",
-            border: "1px solid rgba(255,255,255,0.08)", textAlign: "center",
-          }}>
-            <p style={{ margin: "0 0 1rem", color: "#94a3b8", fontSize: "0.85rem" }}>
-              Move a piece <strong>{gameState.diceRoll}</strong> steps:
-            </p>
-            <div style={{ display: "flex", justifyContent: "center", gap: "14px" }}>
-              {tokens.map((pos: number, idx: number) => {
-                const cannotMove = (pos === -1 && gameState.diceRoll !== 6) || (pos + (gameState.diceRoll || 0) > 30);
-                const myColor = colors[state.players.findIndex(p => p.id === playerId) % 4];
-                return (
-                  <button key={idx} type="button" disabled={busy || cannotMove}
-                    onClick={() => handleAction({ type: "move_token", tokenIndex: idx })}
-                    style={{
-                      flex: "0 0 auto", width: "120px", padding: "14px", borderRadius: "14px",
-                      background: cannotMove ? "rgba(255,255,255,0.03)" : `linear-gradient(135deg, ${myColor}, ${myColor}cc)`,
-                      color: cannotMove ? "#475569" : "#fff", border: "none",
-                      fontWeight: 700, cursor: cannotMove ? "default" : "pointer",
-                      boxShadow: cannotMove ? "none" : `0 6px 16px ${myColor}40`,
-                      transition: "all 0.2s",
-                    }}>
-                    <div style={{ fontSize: "1.5rem" }}>{cannotMove ? "🔒" : "🚀"}</div>
-                    <div style={{ fontSize: "0.8rem", marginTop: "4px" }}>Token {idx + 1}</div>
-                    <div style={{ fontSize: "0.65rem", marginTop: "2px", opacity: 0.8 }}>
-                      {pos === -1 ? "Yard (Need 6)" : `Step ${pos}`}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Status message */}
-        {!isMyTurn && (
-          <p style={{ textAlign: "center", color: "#64748b", fontSize: "0.85rem", marginTop: "1rem" }}>
-            ⏳ Waiting for {state.players.find(p => p.id === gameState.currentPlayerId)?.name}'s turn...
-          </p>
-        )}
+        {/* Controls */}
+        <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+          <button className="btn btn-reset" style={{ background: "#fff", color: "#185a9d", padding: "10px 20px", borderRadius: "8px", fontWeight: "bold", border: "none" }} onClick={() => handleAction({ type: "restart" })} disabled={busy}>Naya Game</button>
+        </div>
       </div>
     );
   }
