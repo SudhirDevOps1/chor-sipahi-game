@@ -8,7 +8,12 @@ type Cell = 0 | 1 | 2;
 type Mode = "2P" | "AI";
 
 function checkWin(board: Cell[][]) {
-  const dirs = [[0, 1], [1, 0], [1, 1], [1, -1]];
+  const dirs = [
+    [0, 1],
+    [1, 0],
+    [1, 1],
+    [1, -1],
+  ];
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       const player = board[r][c];
@@ -18,7 +23,14 @@ function checkWin(board: Cell[][]) {
         for (let k = 1; k < 4; k++) {
           const nr = r + dr * k;
           const nc = c + dc * k;
-          if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS || board[nr][nc] !== player) break;
+          if (
+            nr < 0 ||
+            nr >= ROWS ||
+            nc < 0 ||
+            nc >= COLS ||
+            board[nr][nc] !== player
+          )
+            break;
           line.push([nr, nc]);
         }
         if (line.length === 4) return { winner: player, line };
@@ -29,11 +41,15 @@ function checkWin(board: Cell[][]) {
 }
 
 export default function ConnectFour({ onBack }: { onBack: () => void }) {
-  const [board, setBoard] = useState<Cell[][]>(() => Array.from({ length: ROWS }, () => Array(COLS).fill(0) as Cell[]));
+  const [board, setBoard] = useState<Cell[][]>(() =>
+    Array.from({ length: ROWS }, () => Array(COLS).fill(0) as Cell[]),
+  );
   const [turn, setTurn] = useState<1 | 2>(1);
   const [mode, setMode] = useState<Mode>("2P");
   const [scores, setScores] = useState({ 1: 0, 2: 0, D: 0 });
-  const [winningLine, setWinningLine] = useState<[number, number][] | null>(null);
+  const [winningLine, setWinningLine] = useState<[number, number][] | null>(
+    null,
+  );
   const [hoverCol, setHoverCol] = useState<number | null>(null);
   const [lastMove, setLastMove] = useState<[number, number] | null>(null);
   const [history, setHistory] = useState<Cell[][][]>([]);
@@ -45,7 +61,11 @@ export default function ConnectFour({ onBack }: { onBack: () => void }) {
     const result = checkWin(board);
     if (result.winner || isDraw) {
       if (result.line) setWinningLine(result.line);
-      if (result.winner) setScores((s) => ({ ...s, [result.winner]: s[result.winner as 1 | 2] + 1 }));
+      if (result.winner)
+        setScores((s) => ({
+          ...s,
+          [result.winner]: s[result.winner as 1 | 2] + 1,
+        }));
       else if (isDraw) setScores((s) => ({ ...s, D: s.D + 1 }));
     }
   }, [board, isDraw]);
@@ -122,10 +142,22 @@ export default function ConnectFour({ onBack }: { onBack: () => void }) {
       badge="GRID STRATEGY"
       right={
         <div className="flex gap-2">
-          <button onClick={() => { setMode("2P"); reset(true); }} className={`heritage-button !min-h-10 ${mode === "2P" ? "ink" : "secondary"}`}>
+          <button
+            onClick={() => {
+              setMode("2P");
+              reset(true);
+            }}
+            className={`heritage-button !min-h-10 ${mode === "2P" ? "ink" : "secondary"}`}
+          >
             <Users size={14} /> 2P
           </button>
-          <button onClick={() => { setMode("AI"); reset(true); }} className={`heritage-button !min-h-10 ${mode === "AI" ? "ink" : "secondary"}`}>
+          <button
+            onClick={() => {
+              setMode("AI");
+              reset(true);
+            }}
+            className={`heritage-button !min-h-10 ${mode === "AI" ? "ink" : "secondary"}`}
+          >
             <Bot size={14} /> Bot
           </button>
         </div>
@@ -133,13 +165,27 @@ export default function ConnectFour({ onBack }: { onBack: () => void }) {
       sidebar={
         <Panel title="Match Center">
           <div className="grid grid-cols-2 gap-2">
-            <Stat label="Red" value={scores[1]} active={turn === 1 && !winner} />
-            <Stat label="Yellow" value={scores[2]} active={turn === 2 && !winner} />
+            <Stat
+              label="Red"
+              value={scores[1]}
+              active={turn === 1 && !winner}
+            />
+            <Stat
+              label="Yellow"
+              value={scores[2]}
+              active={turn === 2 && !winner}
+            />
           </div>
-          <div className="mt-3 text-xs font-bold text-[var(--ink-soft)]">Draws: {scores.D}</div>
+          <div className="mt-3 text-xs font-bold text-[var(--ink-soft)]">
+            Draws: {scores.D}
+          </div>
           <div className="mt-4 grid grid-cols-2 gap-2">
-            <button onClick={undo} className="heritage-button secondary"><Undo2 size={14} /> Undo</button>
-            <button onClick={() => reset(false)} className="heritage-button"><RotateCcw size={14} /> New</button>
+            <button onClick={undo} className="heritage-button secondary">
+              <Undo2 size={14} /> Undo
+            </button>
+            <button onClick={() => reset(false)} className="heritage-button">
+              <RotateCcw size={14} /> New
+            </button>
           </div>
         </Panel>
       }
@@ -166,7 +212,9 @@ export default function ConnectFour({ onBack }: { onBack: () => void }) {
             {Array.from({ length: ROWS }).map((_, r) =>
               Array.from({ length: COLS }).map((_, c) => {
                 const val = board[r][c];
-                const isWin = winningLine?.some(([wr, wc]) => wr === r && wc === c);
+                const isWin = winningLine?.some(
+                  ([wr, wc]) => wr === r && wc === c,
+                );
                 const isLast = lastMove?.[0] === r && lastMove?.[1] === c;
                 return (
                   <button
@@ -182,19 +230,25 @@ export default function ConnectFour({ onBack }: { onBack: () => void }) {
                         } ${isLast ? "animate-drop" : ""} ${isWin ? "ring-4 ring-[var(--paper)]" : ""}`}
                       />
                     )}
-                    {val === 0 && hoverCol === c && getDropRow(board, c) === r && (
-                      <div className={`absolute inset-[22%] rounded-full border-2 border-dashed ${turn === 1 ? "border-[#e46427]" : "border-[#e5b343]"}`} />
-                    )}
+                    {val === 0 &&
+                      hoverCol === c &&
+                      getDropRow(board, c) === r && (
+                        <div
+                          className={`absolute inset-[22%] rounded-full border-2 border-dashed ${turn === 1 ? "border-[#e46427]" : "border-[#e5b343]"}`}
+                        />
+                      )}
                   </button>
                 );
-              })
+              }),
             )}
           </div>
         </div>
 
         {(winner !== 0 || isDraw) && (
           <div className="mt-4 text-center">
-            <button onClick={() => reset(false)} className="heritage-button">Play Again</button>
+            <button onClick={() => reset(false)} className="heritage-button">
+              Play Again
+            </button>
           </div>
         )}
       </div>

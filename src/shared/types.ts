@@ -1,5 +1,11 @@
 export type GameRole = "raja" | "mantri" | "chor" | "sipahi";
-export type GamePhase = "lobby" | "role_reveal" | "minister_reveal" | "guess" | "round_result" | "game_over";
+export type GamePhase =
+  | "lobby"
+  | "role_reveal"
+  | "minister_reveal"
+  | "guess"
+  | "round_result"
+  | "game_over";
 export type GameStatus = "waiting" | "playing" | "finished";
 export type MessageScope = "all" | "team";
 
@@ -53,7 +59,6 @@ export interface RoomSummary {
   status: GameStatus;
   gameType: string;
 }
-
 
 export interface GuestIdentity {
   deviceId: string;

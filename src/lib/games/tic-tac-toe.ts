@@ -18,7 +18,7 @@ export function handleTicTacToeAction(
   state: TicTacToeState,
   action: { type: string; cellIndex?: number },
   playerId: string,
-  players: { id: string }[]
+  players: { id: string }[],
 ): TicTacToeState {
   if (playerId !== state.currentPlayerId) {
     throw new Error("Not your turn!");
@@ -69,9 +69,14 @@ export function handleTicTacToeAction(
 
 function checkWinner(board: (string | null)[]): string | null {
   const lines = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
-    [0, 4, 8], [2, 4, 6]             // diagonals
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8], // rows
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8], // columns
+    [0, 4, 8],
+    [2, 4, 6], // diagonals
   ];
   for (const [a, b, c] of lines) {
     if (board[a] && board[a] === board[b] && board[a] === board[c]) {

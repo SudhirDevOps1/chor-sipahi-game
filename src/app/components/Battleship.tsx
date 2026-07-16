@@ -22,10 +22,18 @@ function placeShips() {
       const r = Math.floor(Math.random() * 10);
       const c = Math.floor(Math.random() * 10);
       const horiz = Math.random() > 0.5;
-      if (horiz && c + ship.size <= 10 && g[r].slice(c, c + ship.size).every((v) => v === 0)) {
+      if (
+        horiz &&
+        c + ship.size <= 10 &&
+        g[r].slice(c, c + ship.size).every((v) => v === 0)
+      ) {
         for (let i = 0; i < ship.size; i++) g[r][c + i] = 1;
         ok = true;
-      } else if (!horiz && r + ship.size <= 10 && g.slice(r, r + ship.size).every((row) => row[c] === 0)) {
+      } else if (
+        !horiz &&
+        r + ship.size <= 10 &&
+        g.slice(r, r + ship.size).every((row) => row[c] === 0)
+      ) {
         for (let i = 0; i < ship.size; i++) g[r + i][c] = 1;
         ok = true;
       }
@@ -65,7 +73,8 @@ export default function Battleship({ onBack }: { onBack: () => void }) {
     }
     setMessage(ps[r][c] === 2 ? "Hit!" : "Miss");
     setTimeout(() => {
-      let br = 0, bc = 0;
+      let br = 0,
+        bc = 0;
       do {
         br = Math.floor(Math.random() * 10);
         bc = Math.floor(Math.random() * 10);
@@ -88,46 +97,78 @@ export default function Battleship({ onBack }: { onBack: () => void }) {
       badge="STRATEGY"
       right={
         <div className="flex gap-2">
-          <button onClick={() => setShow((s) => !s)} className="heritage-button secondary !min-h-10"><Eye size={14} /> {show ? "Hide" : "Show"}</button>
-          <button onClick={reset} className="heritage-button !min-h-10"><RotateCcw size={14} /> Reset</button>
+          <button
+            onClick={() => setShow((s) => !s)}
+            className="heritage-button secondary !min-h-10"
+          >
+            <Eye size={14} /> {show ? "Hide" : "Show"}
+          </button>
+          <button onClick={reset} className="heritage-button !min-h-10">
+            <RotateCcw size={14} /> Reset
+          </button>
         </div>
       }
       sidebar={
         <Panel title="Fleet">
           <div className="text-sm font-bold mb-3">{message}</div>
           <div className="space-y-1 text-xs font-bold text-[var(--ink-soft)]">
-            {SHIPS.map((s) => <div key={s.name}>{s.name} · {s.size}</div>)}
+            {SHIPS.map((s) => (
+              <div key={s.name}>
+                {s.name} · {s.size}
+              </div>
+            ))}
           </div>
         </Panel>
       }
-      tips={["Click enemy cells to fire.", "Dark cells are misses. Saffron cells are hits.", "Sink all 17 ship cells to win."]}
+      tips={[
+        "Click enemy cells to fire.",
+        "Dark cells are misses. Saffron cells are hits.",
+        "Sink all 17 ship cells to win.",
+      ]}
     >
       <div className="grid md:grid-cols-2 gap-4">
         <div className="heritage-card p-3">
-          <div className="text-[10px] font-black tracking-widest uppercase mb-2">Your Fleet</div>
+          <div className="text-[10px] font-black tracking-widest uppercase mb-2">
+            Your Fleet
+          </div>
           <div className="grid grid-cols-10 gap-1">
-            {playerGrid.map((row, r) => row.map((v, c) => {
-              const shot = botShots[r][c];
-              let cls = "bg-[var(--paper)]";
-              if (v === 1 && show && shot === 0) cls = "bg-[#1d7373]";
-              if (shot === 1) cls = "bg-[#c5c8d0]";
-              if (shot === 2) cls = "bg-[#e46427]";
-              return <div key={`${r}-${c}`} className={`aspect-square border border-[var(--ink)] ${cls}`} />;
-            }))}
+            {playerGrid.map((row, r) =>
+              row.map((v, c) => {
+                const shot = botShots[r][c];
+                let cls = "bg-[var(--paper)]";
+                if (v === 1 && show && shot === 0) cls = "bg-[#1d7373]";
+                if (shot === 1) cls = "bg-[#c5c8d0]";
+                if (shot === 2) cls = "bg-[#e46427]";
+                return (
+                  <div
+                    key={`${r}-${c}`}
+                    className={`aspect-square border border-[var(--ink)] ${cls}`}
+                  />
+                );
+              }),
+            )}
           </div>
         </div>
         <div className="heritage-card p-3">
-          <div className="text-[10px] font-black tracking-widest uppercase mb-2">Enemy Grid</div>
+          <div className="text-[10px] font-black tracking-widest uppercase mb-2">
+            Enemy Grid
+          </div>
           <div className="grid grid-cols-10 gap-1">
-            {playerShots.map((row, r) => row.map((v, c) => (
-              <button
-                key={`${r}-${c}`}
-                onClick={() => fire(r, c)}
-                className={`aspect-square border border-[var(--ink)] ${
-                  v === 0 ? "bg-[var(--paper-deep)] hover:bg-[var(--paper)]" : v === 1 ? "bg-[#c5c8d0]" : "bg-[#e46427]"
-                }`}
-              />
-            )))}
+            {playerShots.map((row, r) =>
+              row.map((v, c) => (
+                <button
+                  key={`${r}-${c}`}
+                  onClick={() => fire(r, c)}
+                  className={`aspect-square border border-[var(--ink)] ${
+                    v === 0
+                      ? "bg-[var(--paper-deep)] hover:bg-[var(--paper)]"
+                      : v === 1
+                        ? "bg-[#c5c8d0]"
+                        : "bg-[#e46427]"
+                  }`}
+                />
+              )),
+            )}
           </div>
         </div>
       </div>

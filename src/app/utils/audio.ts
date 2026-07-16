@@ -17,7 +17,8 @@ export function getMuteState() {
 
 function getAudioContext(): AudioContext | null {
   if (typeof window === "undefined") return null;
-  const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+  const AudioContextClass =
+    window.AudioContext || (window as any).webkitAudioContext;
   if (!AudioContextClass) return null;
   return new AudioContextClass();
 }
@@ -57,7 +58,7 @@ export function playDiceRollSound() {
 
   osc.type = "sawtooth";
   osc.frequency.setValueAtTime(150, ctx.currentTime);
-  
+
   // Simulate rolling pitch drops
   for (let i = 0; i < 4; i++) {
     const time = ctx.currentTime + i * 0.1;
@@ -111,7 +112,10 @@ export function playWinSound() {
     osc.frequency.setValueAtTime(freq, ctx.currentTime + startDelay);
 
     gain.gain.setValueAtTime(0.08, ctx.currentTime + startDelay);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startDelay + duration);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      ctx.currentTime + startDelay + duration,
+    );
 
     osc.connect(gain);
     gain.connect(ctx.destination);
@@ -123,6 +127,6 @@ export function playWinSound() {
   // Play C Major Arpeggio: C4 -> E4 -> G4 -> C5
   playNote(261.63, 0.0, 0.2); // C4
   playNote(329.63, 0.1, 0.2); // E4
-  playNote(392.00, 0.2, 0.2); // G4
+  playNote(392.0, 0.2, 0.2); // G4
   playNote(523.25, 0.3, 0.4); // C5
 }

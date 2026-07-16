@@ -5,9 +5,14 @@ import GameShell, { Panel, Stat } from "../components/GameShell";
 type Cell = "X" | "O" | null;
 type Mode = "2P" | "AI_EASY" | "AI_HARD";
 const WIN_LINES = [
-  [0, 1, 2], [3, 4, 5], [6, 7, 8],
-  [0, 3, 6], [1, 4, 7], [2, 5, 8],
-  [0, 4, 8], [2, 4, 6],
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6],
 ];
 
 function checkWinner(board: Cell[]) {
@@ -60,7 +65,8 @@ export default function TicTacToe({ onBack }: { onBack: () => void }) {
 
   useEffect(() => {
     if (winner || isDraw) {
-      if (winner) setScores((s) => ({ ...s, [winner]: s[winner as "X" | "O"] + 1 }));
+      if (winner)
+        setScores((s) => ({ ...s, [winner]: s[winner as "X" | "O"] + 1 }));
       else setScores((s) => ({ ...s, D: s.D + 1 }));
       if (line) setWinningLine(line);
     }
@@ -127,11 +133,13 @@ export default function TicTacToe({ onBack }: { onBack: () => void }) {
       badge="GRID STRATEGY"
       right={
         <div className="flex gap-2">
-          {([
-            ["2P", Users, "2P"],
-            ["AI_EASY", Bot, "Easy"],
-            ["AI_HARD", Bot, "Pro"],
-          ] as const).map(([id, Icon, label]) => (
+          {(
+            [
+              ["2P", Users, "2P"],
+              ["AI_EASY", Bot, "Easy"],
+              ["AI_HARD", Bot, "Pro"],
+            ] as const
+          ).map(([id, Icon, label]) => (
             <button
               key={id}
               onClick={() => {
@@ -172,7 +180,11 @@ export default function TicTacToe({ onBack }: { onBack: () => void }) {
       <div className="heritage-card p-4 md:p-6">
         <div className="text-center mb-5">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 border-2 border-[var(--ink)] bg-[var(--paper)] text-xs font-bold">
-            {winner ? `${winner} wins this round` : isDraw ? "Draw game" : `${xTurn ? "X" : "O"} to move`}
+            {winner
+              ? `${winner} wins this round`
+              : isDraw
+                ? "Draw game"
+                : `${xTurn ? "X" : "O"} to move`}
           </div>
         </div>
 
@@ -190,7 +202,13 @@ export default function TicTacToe({ onBack }: { onBack: () => void }) {
                       : "bg-[var(--paper)] hover:bg-[var(--paper-deep)]"
                   }`}
                 >
-                  <span className={cell === "X" ? "text-[var(--saffron-dark)]" : "text-[var(--teal)]"}>
+                  <span
+                    className={
+                      cell === "X"
+                        ? "text-[var(--saffron-dark)]"
+                        : "text-[var(--teal)]"
+                    }
+                  >
                     {cell}
                   </span>
                 </button>
@@ -200,7 +218,9 @@ export default function TicTacToe({ onBack }: { onBack: () => void }) {
 
           {(winner || isDraw) && (
             <div className="absolute inset-0 bg-[rgba(247,240,223,0.92)] border-2 border-[var(--ink)] flex flex-col items-center justify-center gap-3 animate-fade-up">
-              <div className="serif text-3xl font-bold">{winner ? `${winner} Wins` : "Draw"}</div>
+              <div className="serif text-3xl font-bold">
+                {winner ? `${winner} Wins` : "Draw"}
+              </div>
               <button onClick={() => reset(true)} className="heritage-button">
                 Play Again
               </button>

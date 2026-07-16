@@ -2,54 +2,66 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 const FALLBACK_SALT = "chor-sipahi-local-privacy-salt";
 
-
 function sha256(ascii: string): string {
   function rightRotate(value: number, amount: number) {
     return (value >>> amount) | (value << (32 - amount));
   }
-  
+
   const mathPow = Math.pow;
   const maxWord = mathPow(2, 32);
-  const lengthProperty = 'length';
+  const lengthProperty = "length";
   let i, j;
 
   const K: number[] = [];
   const H: number[] = [];
   const isPrime: Record<number, boolean> = {};
   let candidate = 2;
-  
+
   while (K[lengthProperty] < 64) {
     if (!isPrime[candidate]) {
       for (i = 0; i < 313; i += candidate) {
         isPrime[i] = true;
       }
-      K.push((mathPow(candidate, 1/3) * maxWord) | 0);
-      H.push((mathPow(candidate, 1/2) * maxWord) | 0);
+      K.push((mathPow(candidate, 1 / 3) * maxWord) | 0);
+      H.push((mathPow(candidate, 1 / 2) * maxWord) | 0);
     }
     candidate++;
   }
-  
+
   const words: number[] = [];
   const asciiLength = ascii[lengthProperty];
   const wordsLength = ((asciiLength + 8) >> 6) + 1;
   for (i = 0; i < wordsLength * 16; i++) words[i] = 0;
-  
+
   for (i = 0; i < asciiLength; i++) {
     words[i >> 2] |= ascii.charCodeAt(i) << (24 - (i % 4) * 8);
   }
-  
+
   words[asciiLength >> 2] |= 0x80 << (24 - (asciiLength % 4) * 8);
   words[wordsLength * 16 - 1] = asciiLength * 8;
-  
+
   for (j = 0; j < words[lengthProperty]; j += 16) {
     const w = words.slice(j, j + 16);
-    let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+    let a = H[0],
+      b = H[1],
+      c = H[2],
+      d = H[3],
+      e = H[4],
+      f = H[5],
+      g = H[6],
+      h = H[7];
     for (i = 0; i < 64; i++) {
       if (i < 16) {
         w[i] = w[i] || 0;
       } else {
-        const s0 = rightRotate(w[i - 15], 7) ^ rightRotate(w[i - 15], 18) ^ (w[i - 15] >>> 3);
-        const s1 = rightRotate(w[i - 2], 17) ^ rightRotate(w[i - 2], 19) ^ (w[i - 2] >>> 10);
+        const s0 =
+          rightRotate(w[i - 15], 7) ^
+          rightRotate(w[i - 15], 18) ^
+          (w[i - 15] >>> 3);
+        const s1 =
+          rightRotate(w[i - 2], 17) ^
+          rightRotate(w[i - 2], 19) ^
+          (w[i - 2] >>> 10);
         w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
       }
       const ch = (e & f) ^ (~e & g);
@@ -76,11 +88,11 @@ function sha256(ascii: string): string {
     H[6] = (H[6] + g) | 0;
     H[7] = (H[7] + h) | 0;
   }
-  
-  let result = '';
+
+  let result = "";
   for (i = 0; i < 8; i++) {
     const val = H[i] >>> 0;
-    result += val.toString(16).padStart(8, '0');
+    result += val.toString(16).padStart(8, "0");
   }
   return result;
 }
@@ -101,17 +113,23 @@ export function hashDeviceSeed(seed: string): string {
   return sha256(`${salt}:${seed}`);
 }
 
-
 export function createGuestSeed(): string {
-  const bytes = new Uint8Array(24);
+  const bytes = new Uint8Array(32); // Increased entropy to 256-bit
   crypto.getRandomValues(bytes);
-  return Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+  return (
+    Array.from(bytes)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("") +
+    "-" +
+    Date.now().toString(36)
+  );
 }
 
 export function getDeviceId(request: Request): string {
-  const seed = request.headers.get("x-device-seed") || createGuestSeed();
+  let seed = request.headers.get("x-device-seed");
+  if (!seed || seed.length < 32) {
+    seed = createGuestSeed();
+  }
   return hashDeviceSeed(seed);
 }
 

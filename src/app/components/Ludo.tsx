@@ -12,18 +12,99 @@ const COLORS: Record<PlayerId, string> = {
   yellow: "bg-[#e5b343]",
   blue: "bg-[#172748]",
 };
-const START: Record<PlayerId, number> = { red: 0, green: 13, yellow: 26, blue: 39 };
+const START: Record<PlayerId, number> = {
+  red: 0,
+  green: 13,
+  yellow: 26,
+  blue: 39,
+};
 const TRACK = [
-  [6,1],[6,2],[6,3],[6,4],[6,5],[5,6],[4,6],[3,6],[2,6],[1,6],[0,6],[0,7],[0,8],
-  [1,8],[2,8],[3,8],[4,8],[5,8],[6,9],[6,10],[6,11],[6,12],[6,13],[6,14],[7,14],[8,14],
-  [8,13],[8,12],[8,11],[8,10],[8,9],[9,8],[10,8],[11,8],[12,8],[13,8],[14,8],[14,7],[14,6],
-  [13,6],[12,6],[11,6],[10,6],[9,6],[8,5],[8,4],[8,3],[8,2],[8,1],[8,0],[7,0],[6,0],
+  [6, 1],
+  [6, 2],
+  [6, 3],
+  [6, 4],
+  [6, 5],
+  [5, 6],
+  [4, 6],
+  [3, 6],
+  [2, 6],
+  [1, 6],
+  [0, 6],
+  [0, 7],
+  [0, 8],
+  [1, 8],
+  [2, 8],
+  [3, 8],
+  [4, 8],
+  [5, 8],
+  [6, 9],
+  [6, 10],
+  [6, 11],
+  [6, 12],
+  [6, 13],
+  [6, 14],
+  [7, 14],
+  [8, 14],
+  [8, 13],
+  [8, 12],
+  [8, 11],
+  [8, 10],
+  [8, 9],
+  [9, 8],
+  [10, 8],
+  [11, 8],
+  [12, 8],
+  [13, 8],
+  [14, 8],
+  [14, 7],
+  [14, 6],
+  [13, 6],
+  [12, 6],
+  [11, 6],
+  [10, 6],
+  [9, 6],
+  [8, 5],
+  [8, 4],
+  [8, 3],
+  [8, 2],
+  [8, 1],
+  [8, 0],
+  [7, 0],
+  [6, 0],
 ];
 const HOME: Record<PlayerId, number[][]> = {
-  red: [[7,1],[7,2],[7,3],[7,4],[7,5],[7,6]],
-  green: [[1,7],[2,7],[3,7],[4,7],[5,7],[6,7]],
-  yellow: [[7,13],[7,12],[7,11],[7,10],[7,9],[7,8]],
-  blue: [[13,7],[12,7],[11,7],[10,7],[9,7],[8,7]],
+  red: [
+    [7, 1],
+    [7, 2],
+    [7, 3],
+    [7, 4],
+    [7, 5],
+    [7, 6],
+  ],
+  green: [
+    [1, 7],
+    [2, 7],
+    [3, 7],
+    [4, 7],
+    [5, 7],
+    [6, 7],
+  ],
+  yellow: [
+    [7, 13],
+    [7, 12],
+    [7, 11],
+    [7, 10],
+    [7, 9],
+    [7, 8],
+  ],
+  blue: [
+    [13, 7],
+    [12, 7],
+    [11, 7],
+    [10, 7],
+    [9, 7],
+    [8, 7],
+  ],
 };
 const SAFE = new Set([0, 8, 13, 21, 26, 34, 39, 47]);
 
@@ -48,10 +129,18 @@ function canMove(token: Token, dice: number) {
 export default function Ludo({ onBack }: { onBack: () => void }) {
   const [playerCount, setPlayerCount] = useState(2);
   const [tokens, setTokens] = useState<Record<PlayerId, Token[]>>({
-    red: Array(4).fill(0).map(() => ({ steps: -1, finished: false })),
-    green: Array(4).fill(0).map(() => ({ steps: -1, finished: false })),
-    yellow: Array(4).fill(0).map(() => ({ steps: -1, finished: false })),
-    blue: Array(4).fill(0).map(() => ({ steps: -1, finished: false })),
+    red: Array(4)
+      .fill(0)
+      .map(() => ({ steps: -1, finished: false })),
+    green: Array(4)
+      .fill(0)
+      .map(() => ({ steps: -1, finished: false })),
+    yellow: Array(4)
+      .fill(0)
+      .map(() => ({ steps: -1, finished: false })),
+    blue: Array(4)
+      .fill(0)
+      .map(() => ({ steps: -1, finished: false })),
   });
   const [current, setCurrent] = useState<PlayerId>("red");
   const [dice, setDice] = useState<number | null>(null);
@@ -66,10 +155,18 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
 
   function reset() {
     setTokens({
-      red: Array(4).fill(0).map(() => ({ steps: -1, finished: false })),
-      green: Array(4).fill(0).map(() => ({ steps: -1, finished: false })),
-      yellow: Array(4).fill(0).map(() => ({ steps: -1, finished: false })),
-      blue: Array(4).fill(0).map(() => ({ steps: -1, finished: false })),
+      red: Array(4)
+        .fill(0)
+        .map(() => ({ steps: -1, finished: false })),
+      green: Array(4)
+        .fill(0)
+        .map(() => ({ steps: -1, finished: false })),
+      yellow: Array(4)
+        .fill(0)
+        .map(() => ({ steps: -1, finished: false })),
+      blue: Array(4)
+        .fill(0)
+        .map(() => ({ steps: -1, finished: false })),
     });
     setCurrent("red");
     setDice(null);
@@ -102,7 +199,9 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
       setSixStreak((s) => s + 1);
     } else setSixStreak(0);
 
-    const moves = tokens[current].map((t, i) => (canMove(t, d) ? i : -1)).filter((i) => i >= 0);
+    const moves = tokens[current]
+      .map((t, i) => (canMove(t, d) ? i : -1))
+      .filter((i) => i >= 0);
     if (moves.length === 0) {
       setMessage(d === 6 ? "No move. Extra turn." : "No moves. Next player.");
       setTimeout(() => {
@@ -153,7 +252,10 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
 
   function moveToken(tokenIdx: number, d = dice || 0) {
     if (!hasRolled || !movable.includes(tokenIdx)) return;
-    const copy = { ...tokens, [current]: tokens[current].map((t) => ({ ...t })) };
+    const copy = {
+      ...tokens,
+      [current]: tokens[current].map((t) => ({ ...t })),
+    };
     const tok = copy[current][tokenIdx];
     let next = tok.steps === -1 ? 0 : tok.steps + d;
     if (next >= 58) {
@@ -224,7 +326,14 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
       right={
         <div className="flex gap-2">
           {[2, 3, 4].map((n) => (
-            <button key={n} onClick={() => { setPlayerCount(n); reset(); }} className={`heritage-button !min-h-10 !px-3 ${playerCount === n ? "ink" : "secondary"}`}>
+            <button
+              key={n}
+              onClick={() => {
+                setPlayerCount(n);
+                reset();
+              }}
+              className={`heritage-button !min-h-10 !px-3 ${playerCount === n ? "ink" : "secondary"}`}
+            >
               {n}P
             </button>
           ))}
@@ -234,15 +343,27 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
         <Panel title="Match Status">
           <div className="text-sm font-bold mb-3">{message}</div>
           {active.map((pid) => (
-            <div key={pid} className={`flex items-center justify-between border-2 px-3 py-2 mb-2 ${current === pid ? "border-[var(--saffron)]" : "border-[var(--ink)]"}`}>
+            <div
+              key={pid}
+              className={`flex items-center justify-between border-2 px-3 py-2 mb-2 ${current === pid ? "border-[var(--saffron)]" : "border-[var(--ink)]"}`}
+            >
               <div className="flex items-center gap-2 text-sm font-bold capitalize">
-                <span className={`w-3 h-3 rounded-full ${COLORS[pid]} border border-[var(--ink)]`} />
+                <span
+                  className={`w-3 h-3 rounded-full ${COLORS[pid]} border border-[var(--ink)]`}
+                />
                 {pid} {pid === "red" ? "(You)" : "(Bot)"}
               </div>
-              <span className="text-xs font-black">{tokens[pid].filter((t) => t.finished).length}/4</span>
+              <span className="text-xs font-black">
+                {tokens[pid].filter((t) => t.finished).length}/4
+              </span>
             </div>
           ))}
-          <button onClick={reset} className="heritage-button secondary w-full mt-2"><RotateCcw size={14} /> Reset</button>
+          <button
+            onClick={reset}
+            className="heritage-button secondary w-full mt-2"
+          >
+            <RotateCcw size={14} /> Reset
+          </button>
         </Panel>
       }
       tips={[
@@ -253,8 +374,16 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
     >
       <div className="heritage-card p-3 md:p-5">
         <div className="flex items-center justify-between gap-3 mb-4">
-          <div className="text-sm font-bold capitalize">{current} to play · {dice ? `Dice ${dice}` : "Ready"}</div>
-          <button onClick={rollDice} disabled={hasRolled || rolling || winner !== null || current !== "red"} className="heritage-button">
+          <div className="text-sm font-bold capitalize">
+            {current} to play · {dice ? `Dice ${dice}` : "Ready"}
+          </div>
+          <button
+            onClick={rollDice}
+            disabled={
+              hasRolled || rolling || winner !== null || current !== "red"
+            }
+            className="heritage-button"
+          >
             <Dices size={16} /> {dice ?? "Roll"}
           </button>
         </div>
@@ -268,19 +397,30 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
                 if (r < 6 && c > 8) bg = "bg-[#cdeedc]";
                 if (r > 8 && c > 8) bg = "bg-[#fff0bf]";
                 if (r > 8 && c < 6) bg = "bg-[#d7e0f2]";
-                if (TRACK.some(([tr, tc]) => tr === r && tc === c)) bg = "bg-white";
-                if (HOME.red.some(([hr, hc]) => hr === r && hc === c)) bg = "bg-[#ffc9b0]";
-                if (HOME.green.some(([hr, hc]) => hr === r && hc === c)) bg = "bg-[#bfe8d2]";
-                if (HOME.yellow.some(([hr, hc]) => hr === r && hc === c)) bg = "bg-[#ffe9a8]";
-                if (HOME.blue.some(([hr, hc]) => hr === r && hc === c)) bg = "bg-[#c7d3ef]";
+                if (TRACK.some(([tr, tc]) => tr === r && tc === c))
+                  bg = "bg-white";
+                if (HOME.red.some(([hr, hc]) => hr === r && hc === c))
+                  bg = "bg-[#ffc9b0]";
+                if (HOME.green.some(([hr, hc]) => hr === r && hc === c))
+                  bg = "bg-[#bfe8d2]";
+                if (HOME.yellow.some(([hr, hc]) => hr === r && hc === c))
+                  bg = "bg-[#ffe9a8]";
+                if (HOME.blue.some(([hr, hc]) => hr === r && hc === c))
+                  bg = "bg-[#c7d3ef]";
                 if (r === 7 && c === 7) bg = "bg-[var(--saffron)]";
-                const safe = TRACK.findIndex(([tr, tc]) => tr === r && tc === c);
+                const safe = TRACK.findIndex(
+                  ([tr, tc]) => tr === r && tc === c,
+                );
                 return (
                   <div key={`${r}-${c}`} className={`relative ${bg}`}>
-                    {SAFE.has(safe) && <span className="absolute inset-0 grid place-items-center text-[8px] opacity-50">★</span>}
+                    {SAFE.has(safe) && (
+                      <span className="absolute inset-0 grid place-items-center text-[8px] opacity-50">
+                        ★
+                      </span>
+                    )}
                   </div>
                 );
-              })
+              }),
             )}
           </div>
 
@@ -290,16 +430,30 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
                 let r = 0;
                 let c = 0;
                 if (tok.finished) {
-                  r = 7; c = 7;
+                  r = 7;
+                  c = 7;
                 } else if (tok.steps === -1) {
-                  if (pid === "red") { r = 1 + Math.floor(idx / 2) * 2; c = 1 + (idx % 2) * 2; }
-                  if (pid === "green") { r = 1 + Math.floor(idx / 2) * 2; c = 10 + (idx % 2) * 2; }
-                  if (pid === "yellow") { r = 10 + Math.floor(idx / 2) * 2; c = 10 + (idx % 2) * 2; }
-                  if (pid === "blue") { r = 10 + Math.floor(idx / 2) * 2; c = 1 + (idx % 2) * 2; }
+                  if (pid === "red") {
+                    r = 1 + Math.floor(idx / 2) * 2;
+                    c = 1 + (idx % 2) * 2;
+                  }
+                  if (pid === "green") {
+                    r = 1 + Math.floor(idx / 2) * 2;
+                    c = 10 + (idx % 2) * 2;
+                  }
+                  if (pid === "yellow") {
+                    r = 10 + Math.floor(idx / 2) * 2;
+                    c = 10 + (idx % 2) * 2;
+                  }
+                  if (pid === "blue") {
+                    r = 10 + Math.floor(idx / 2) * 2;
+                    c = 1 + (idx % 2) * 2;
+                  }
                 } else {
                   const p = pos(pid, tok.steps);
                   if (!p) return null;
-                  r = p[0]; c = p[1];
+                  r = p[0];
+                  c = p[1];
                 }
                 const can = current === pid && movable.includes(idx);
                 return (
@@ -307,21 +461,32 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
                     key={`${pid}-${idx}`}
                     onClick={() => moveToken(idx)}
                     disabled={!can}
-                    style={{ left: `${(c / 15) * 100}%`, top: `${(r / 15) * 100}%`, width: `${100 / 15}%`, height: `${100 / 15}%` }}
+                    style={{
+                      left: `${(c / 15) * 100}%`,
+                      top: `${(r / 15) * 100}%`,
+                      width: `${100 / 15}%`,
+                      height: `${100 / 15}%`,
+                    }}
                     className="absolute grid place-items-center"
                   >
-                    <span className={`w-[78%] h-[78%] rounded-full border-2 border-white shadow ${COLORS[pid]} ${can ? "ring-2 ring-[var(--ink)] scale-110" : ""}`} />
+                    <span
+                      className={`w-[78%] h-[78%] rounded-full border-2 border-white shadow ${COLORS[pid]} ${can ? "ring-2 ring-[var(--ink)] scale-110" : ""}`}
+                    />
                   </button>
                 );
-              })
+              }),
             )}
           </div>
 
           {winner && (
             <div className="absolute inset-0 bg-[rgba(247,240,223,0.94)] grid place-items-center">
               <div className="text-center">
-                <div className="serif text-3xl font-bold capitalize">{winner} Wins</div>
-                <button onClick={reset} className="heritage-button mt-4">Play Again</button>
+                <div className="serif text-3xl font-bold capitalize">
+                  {winner} Wins
+                </div>
+                <button onClick={reset} className="heritage-button mt-4">
+                  Play Again
+                </button>
               </div>
             </div>
           )}

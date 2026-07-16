@@ -7,7 +7,9 @@ export interface ConnectFourState {
 
 export function initConnectFour(players: { id: string }[]): ConnectFourState {
   return {
-    board: Array(6).fill(null).map(() => Array(7).fill(null)),
+    board: Array(6)
+      .fill(null)
+      .map(() => Array(7).fill(null)),
     currentPlayerId: players[0].id,
     winnerId: null,
     roundsPlayed: 1,
@@ -18,7 +20,7 @@ export function handleConnectFourAction(
   state: ConnectFourState,
   action: { type: string; colIndex?: number },
   playerId: string,
-  players: { id: string }[]
+  players: { id: string }[],
 ): ConnectFourState {
   if (playerId !== state.currentPlayerId) {
     throw new Error("Not your turn!");
@@ -51,7 +53,12 @@ export function handleConnectFourAction(
     const playerSymbol = isPlayer1 ? "R" : "Y"; // Red vs Yellow
     nextBoard[rowToPlace][col] = playerSymbol;
 
-    const hasWon = checkConnectFourWinner(nextBoard, rowToPlace, col, playerSymbol);
+    const hasWon = checkConnectFourWinner(
+      nextBoard,
+      rowToPlace,
+      col,
+      playerSymbol,
+    );
     let nextWinner: string | null = null;
     if (hasWon) {
       nextWinner = playerId;
@@ -80,13 +87,13 @@ function checkConnectFourWinner(
   board: (string | null)[][],
   row: number,
   col: number,
-  symbol: string
+  symbol: string,
 ): boolean {
   const directions = [
-    [0, 1],   // horizontal
-    [1, 0],   // vertical
-    [1, 1],   // diagonal down-right
-    [1, -1]   // diagonal down-left
+    [0, 1], // horizontal
+    [1, 0], // vertical
+    [1, 1], // diagonal down-right
+    [1, -1], // diagonal down-left
   ];
 
   for (const [dr, dc] of directions) {

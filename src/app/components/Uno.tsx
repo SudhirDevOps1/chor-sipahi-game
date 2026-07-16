@@ -5,7 +5,21 @@ import GameShell, { Panel } from "../components/GameShell";
 type Color = "red" | "green" | "blue" | "yellow" | "wild";
 type Card = { color: Color; value: string; id: string };
 const COLORS: Color[] = ["red", "green", "blue", "yellow"];
-const VALUES = ["0","1","2","3","4","5","6","7","8","9","skip","reverse","+2"];
+const VALUES = [
+  "0",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "skip",
+  "reverse",
+  "+2",
+];
 
 function makeDeck(): Card[] {
   const d: Card[] = [];
@@ -48,11 +62,17 @@ export default function Uno({ onBack }: { onBack: () => void }) {
     setMessage("Your turn — play a matching card or draw");
   }
 
-  useEffect(() => { deal(); }, [players]);
+  useEffect(() => {
+    deal();
+  }, [players]);
 
   function canPlay(card: Card) {
     if (!discard) return true;
-    return card.color === "wild" || card.color === discard.color || card.value === discard.value;
+    return (
+      card.color === "wild" ||
+      card.color === discard.color ||
+      card.value === discard.value
+    );
   }
 
   function advance(from: number, steps = 1) {
@@ -71,7 +91,9 @@ export default function Uno({ onBack }: { onBack: () => void }) {
     if (ended || current !== 0) return;
     const card = hands[0][idx];
     if (!card || !canPlay(card)) return;
-    const nh = hands.map((h, i) => (i === 0 ? h.filter((_, j) => j !== idx) : [...h]));
+    const nh = hands.map((h, i) =>
+      i === 0 ? h.filter((_, j) => j !== idx) : [...h],
+    );
     setHands(nh);
     setDiscard(card);
     if (nh[0].length === 0) {
@@ -86,7 +108,18 @@ export default function Uno({ onBack }: { onBack: () => void }) {
   function draw() {
     if (ended || current !== 0) return;
     const color = COLORS[Math.floor(Math.random() * 4)];
-    const nh = hands.map((h, i) => (i === 0 ? [...h, { color, value: String(Math.floor(Math.random() * 10)), id: `draw-${Date.now()}` }] : h));
+    const nh = hands.map((h, i) =>
+      i === 0
+        ? [
+            ...h,
+            {
+              color,
+              value: String(Math.floor(Math.random() * 10)),
+              id: `draw-${Date.now()}`,
+            },
+          ]
+        : h,
+    );
     setHands(nh);
     setCurrent(advance(0));
     setMessage("You drew a card");
@@ -99,7 +132,9 @@ export default function Uno({ onBack }: { onBack: () => void }) {
       const idx = hand.findIndex(canPlay);
       if (idx >= 0) {
         const card = hand[idx];
-        const nh = hands.map((h, i) => (i === current ? h.filter((_, j) => j !== idx) : [...h]));
+        const nh = hands.map((h, i) =>
+          i === current ? h.filter((_, j) => j !== idx) : [...h],
+        );
         setHands(nh);
         setDiscard(card);
         if (nh[current].length === 0) {
@@ -110,7 +145,11 @@ export default function Uno({ onBack }: { onBack: () => void }) {
         applyEffect(card, current);
       } else {
         const color = COLORS[Math.floor(Math.random() * 4)];
-        const nh = hands.map((h, i) => (i === current ? [...h, { color, value: "0", id: `bot-${Date.now()}` }] : h));
+        const nh = hands.map((h, i) =>
+          i === current
+            ? [...h, { color, value: "0", id: `bot-${Date.now()}` }]
+            : h,
+        );
         setHands(nh);
         setCurrent(advance(current));
       }
@@ -126,8 +165,14 @@ export default function Uno({ onBack }: { onBack: () => void }) {
       badge="CARD GAME"
       right={
         <div className="flex gap-2">
-          {[2,3,4].map((n) => (
-            <button key={n} onClick={() => setPlayers(n)} className={`heritage-button !min-h-10 !px-3 ${players === n ? "ink" : "secondary"}`}>{n}P</button>
+          {[2, 3, 4].map((n) => (
+            <button
+              key={n}
+              onClick={() => setPlayers(n)}
+              className={`heritage-button !min-h-10 !px-3 ${players === n ? "ink" : "secondary"}`}
+            >
+              {n}P
+            </button>
           ))}
         </div>
       }
@@ -135,37 +180,61 @@ export default function Uno({ onBack }: { onBack: () => void }) {
         <Panel title="Table">
           <div className="text-sm font-bold mb-3">{message}</div>
           {discard && (
-            <div className={`h-24 border-2 border-[var(--ink)] ${BG[discard.color]} text-white grid place-items-center font-black text-lg mb-3`}>
+            <div
+              className={`h-24 border-2 border-[var(--ink)] ${BG[discard.color]} text-white grid place-items-center font-black text-lg mb-3`}
+            >
               {discard.value}
             </div>
           )}
-          <button onClick={deal} className="heritage-button secondary w-full"><RotateCcw size={14} /> New Game</button>
+          <button onClick={deal} className="heritage-button secondary w-full">
+            <RotateCcw size={14} /> New Game
+          </button>
         </Panel>
       }
-      tips={["Play a card matching color or value.", "Wild cards can be played anytime.", "Empty your hand to win."]}
+      tips={[
+        "Play a card matching color or value.",
+        "Wild cards can be played anytime.",
+        "Empty your hand to win.",
+      ]}
     >
       <div className="space-y-3">
         {hands.map((hand, i) => (
-          <div key={i} className={`heritage-card p-4 ${current === i ? "outline outline-2 outline-[var(--saffron)]" : ""}`}>
+          <div
+            key={i}
+            className={`heritage-card p-4 ${current === i ? "outline outline-2 outline-[var(--saffron)]" : ""}`}
+          >
             <div className="flex items-center justify-between mb-2 text-sm font-bold">
-              <span>Player {i + 1}{i === 0 ? " (You)" : ""}</span>
-              <span className="text-xs text-[var(--ink-soft)]">{hand.length} cards</span>
+              <span>
+                Player {i + 1}
+                {i === 0 ? " (You)" : ""}
+              </span>
+              <span className="text-xs text-[var(--ink-soft)]">
+                {hand.length} cards
+              </span>
             </div>
             {i === 0 ? (
               <div className="flex flex-wrap gap-2">
                 {hand.map((c, idx) => (
-                  <button key={c.id} onClick={() => playCard(idx)} className={`w-12 h-16 border-2 border-[var(--ink)] ${BG[c.color]} text-white text-[10px] font-black grid place-items-center ${canPlay(c) ? "shadow-[3px_3px_0_var(--ink)]" : "opacity-60"}`}>
+                  <button
+                    key={c.id}
+                    onClick={() => playCard(idx)}
+                    className={`w-12 h-16 border-2 border-[var(--ink)] ${BG[c.color]} text-white text-[10px] font-black grid place-items-center ${canPlay(c) ? "shadow-[3px_3px_0_var(--ink)]" : "opacity-60"}`}
+                  >
                     {c.value}
                   </button>
                 ))}
               </div>
             ) : (
-              <div className="text-xs text-[var(--ink-soft)]">Hidden bot hand</div>
+              <div className="text-xs text-[var(--ink-soft)]">
+                Hidden bot hand
+              </div>
             )}
           </div>
         ))}
         {current === 0 && !ended && (
-          <button onClick={draw} className="heritage-button">Draw Card</button>
+          <button onClick={draw} className="heritage-button">
+            Draw Card
+          </button>
         )}
       </div>
     </GameShell>

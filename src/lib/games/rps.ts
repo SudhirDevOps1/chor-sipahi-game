@@ -28,7 +28,7 @@ export function handleRpsAction(
   state: RpsState,
   action: { type: string; choice?: string },
   playerId: string,
-  players: { id: string }[]
+  players: { id: string }[],
 ): RpsState {
   if (state.winnerId && action.type !== "restart") {
     throw new Error("Game is already finished!");

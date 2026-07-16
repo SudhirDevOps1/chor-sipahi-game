@@ -38,7 +38,9 @@ export default function WordLink({ onBack }: { onBack: () => void }) {
       n[current] += 1;
       return n;
     });
-    setMessage(`Accepted “${word}”. Player ${((current + 1) % players) + 1} next.`);
+    setMessage(
+      `Accepted “${word}”. Player ${((current + 1) % players) + 1} next.`,
+    );
     setCurrent((c) => (c + 1) % players);
   }
 
@@ -59,8 +61,14 @@ export default function WordLink({ onBack }: { onBack: () => void }) {
       badge="WORD PUZZLE"
       right={
         <div className="flex gap-2">
-          {[2,3,4].map((n) => (
-            <button key={n} onClick={() => setPlayers(n)} className={`heritage-button !min-h-10 !px-3 ${players === n ? "ink" : "secondary"}`}>{n}P</button>
+          {[2, 3, 4].map((n) => (
+            <button
+              key={n}
+              onClick={() => setPlayers(n)}
+              className={`heritage-button !min-h-10 !px-3 ${players === n ? "ink" : "secondary"}`}
+            >
+              {n}P
+            </button>
           ))}
         </div>
       }
@@ -68,17 +76,32 @@ export default function WordLink({ onBack }: { onBack: () => void }) {
         <Panel title="Scoreboard">
           {Array.from({ length: players }).map((_, i) => (
             <div key={i} className="mb-2">
-              <Stat label={`Player ${i + 1}`} value={scores[i]} active={current === i} />
+              <Stat
+                label={`Player ${i + 1}`}
+                value={scores[i]}
+                active={current === i}
+              />
             </div>
           ))}
-          <button onClick={reset} className="heritage-button secondary w-full mt-2"><RotateCcw size={14} /> Reset</button>
+          <button
+            onClick={reset}
+            className="heritage-button secondary w-full mt-2"
+          >
+            <RotateCcw size={14} /> Reset
+          </button>
         </Panel>
       }
-      tips={["Each new word must begin with the previous word’s last letter.", "No repeats allowed.", "Keep the chain alive as long as possible."]}
+      tips={[
+        "Each new word must begin with the previous word’s last letter.",
+        "No repeats allowed.",
+        "Keep the chain alive as long as possible.",
+      ]}
     >
       <div className="heritage-card p-5">
         <div className="border-2 border-[var(--ink)] bg-[var(--paper)] p-5 text-center mb-4">
-          <div className="text-[10px] font-black tracking-widest uppercase text-[var(--ink-soft)]">Current Word</div>
+          <div className="text-[10px] font-black tracking-widest uppercase text-[var(--ink-soft)]">
+            Current Word
+          </div>
           <div className="serif text-3xl md:text-4xl mt-2">{last || "—"}</div>
           <div className="text-xs text-[var(--ink-soft)] mt-2">{hint}</div>
         </div>
@@ -90,12 +113,19 @@ export default function WordLink({ onBack }: { onBack: () => void }) {
             placeholder="Type a word..."
             className="heritage-input !pl-4 flex-1"
           />
-          <button onClick={submit} className="heritage-button"><Link2 size={14} /> Link</button>
+          <button onClick={submit} className="heritage-button">
+            <Link2 size={14} /> Link
+          </button>
         </div>
-        <div className="mt-3 text-xs font-bold text-[var(--ink-soft)]">{message}</div>
+        <div className="mt-3 text-xs font-bold text-[var(--ink-soft)]">
+          {message}
+        </div>
         <div className="mt-5 flex flex-wrap gap-2">
           {used.map((w, i) => (
-            <span key={i} className="px-3 py-1.5 border border-[var(--ink)] bg-[var(--paper-deep)] text-sm font-bold">
+            <span
+              key={i}
+              className="px-3 py-1.5 border border-[var(--ink)] bg-[var(--paper-deep)] text-sm font-bold"
+            >
               {w}
             </span>
           ))}

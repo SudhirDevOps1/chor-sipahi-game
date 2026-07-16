@@ -17,9 +17,11 @@ const getD1Db = () => {
     return new Proxy({} as any, {
       get() {
         return () => {
-          throw new Error("Database query attempted outside an active OpenNext request context with a D1 binding.");
+          throw new Error(
+            "Database query attempted outside an active OpenNext request context with a D1 binding.",
+          );
         };
-      }
+      },
     });
   }
 
@@ -34,5 +36,5 @@ export const db = new Proxy({} as any, {
       return value.bind(instance);
     }
     return value;
-  }
+  },
 });

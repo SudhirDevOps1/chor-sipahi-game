@@ -24,7 +24,7 @@ export function handleLudoAction(
   state: LudoState,
   action: { type: string; tokenIndex?: number },
   playerId: string,
-  players: { id: string }[]
+  players: { id: string }[],
 ): LudoState {
   if (playerId !== state.currentPlayerId) {
     throw new Error("Not your turn!");
@@ -54,7 +54,8 @@ export function handleLudoAction(
     if (!canMoveAny) {
       // No moves possible, skip turn immediately
       nextState.hasRolled = false;
-      const nextIdx = (players.findIndex((p) => p.id === playerId) + 1) % players.length;
+      const nextIdx =
+        (players.findIndex((p) => p.id === playerId) + 1) % players.length;
       nextState.currentPlayerId = players[nextIdx].id;
     }
 
@@ -112,7 +113,8 @@ export function handleLudoAction(
     // Pass turn to next player
     nextState.hasRolled = false;
     nextState.diceRoll = null;
-    const nextIdx = (players.findIndex((p) => p.id === playerId) + 1) % players.length;
+    const nextIdx =
+      (players.findIndex((p) => p.id === playerId) + 1) % players.length;
     nextState.currentPlayerId = players[nextIdx].id;
 
     return nextState;

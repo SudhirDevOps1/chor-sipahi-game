@@ -51,3 +51,17 @@ pnpm-debug.log*
 # OS temporary files
 .DS_Store
 Thumbs.db
+
+# Heavy assets and mockups (Do not upload to GitHub)
+images/
+assets/mockups/
+
+# Local database files
+*.sqlite
+*.sqlite3
+*.db
+.d1/
+
+# Agent Scratch files
+scratch/
+.gemini/

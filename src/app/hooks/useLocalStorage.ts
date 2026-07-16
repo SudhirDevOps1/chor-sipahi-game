@@ -27,7 +27,11 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   }, [hydrated, key, value]);
 
   const update = useCallback((next: T | ((previous: T) => T)) => {
-    setValue((previous) => typeof next === "function" ? (next as (previous: T) => T)(previous) : next);
+    setValue((previous) =>
+      typeof next === "function"
+        ? (next as (previous: T) => T)(previous)
+        : next,
+    );
   }, []);
 
   return [value, update, hydrated] as const;

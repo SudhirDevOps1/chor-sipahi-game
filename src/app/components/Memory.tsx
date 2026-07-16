@@ -1,7 +1,20 @@
 import { useEffect, useState } from "react";
 import GameShell, { Panel, Stat } from "../components/GameShell";
 
-const EMOJIS = ["🍎","🍊","🍋","🍇","🍓","🍒","🍑","🥝","🍌","🍉","🍍","🥭"];
+const EMOJIS = [
+  "🍎",
+  "🍊",
+  "🍋",
+  "🍇",
+  "🍓",
+  "🍒",
+  "🍑",
+  "🥝",
+  "🍌",
+  "🍉",
+  "🍍",
+  "🥭",
+];
 
 export default function Memory({ onBack }: { onBack: () => void }) {
   const [pairs, setPairs] = useState(8);
@@ -16,7 +29,9 @@ export default function Memory({ onBack }: { onBack: () => void }) {
   const [message, setMessage] = useState("Flip two cards to find a pair");
 
   useEffect(() => {
-    const selected = [...EMOJIS].sort(() => Math.random() - 0.5).slice(0, pairs);
+    const selected = [...EMOJIS]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, pairs);
     const cards = [...selected, ...selected].sort(() => Math.random() - 0.5);
     setGrid(cards);
     setFlipped(Array(cards.length).fill(false));
@@ -49,7 +64,11 @@ export default function Memory({ onBack }: { onBack: () => void }) {
           return n;
         });
         setOpen([]);
-        setMessage(nextMatched.every(Boolean) ? "All pairs found!" : `Player ${current + 1} found a pair`);
+        setMessage(
+          nextMatched.every(Boolean)
+            ? "All pairs found!"
+            : `Player ${current + 1} found a pair`,
+        );
       } else {
         setMessage("No match");
         setTimeout(() => {
@@ -73,9 +92,18 @@ export default function Memory({ onBack }: { onBack: () => void }) {
       right={
         <div className="flex gap-2">
           {[6, 8, 12].map((n) => (
-            <button key={n} onClick={() => setPairs(n)} className={`heritage-button !min-h-10 !px-3 ${pairs === n ? "ink" : "secondary"}`}>{n}</button>
+            <button
+              key={n}
+              onClick={() => setPairs(n)}
+              className={`heritage-button !min-h-10 !px-3 ${pairs === n ? "ink" : "secondary"}`}
+            >
+              {n}
+            </button>
           ))}
-          <button onClick={() => setPlayers((p) => (p === 1 ? 2 : 1))} className="heritage-button secondary !min-h-10 !px-3">
+          <button
+            onClick={() => setPlayers((p) => (p === 1 ? 2 : 1))}
+            className="heritage-button secondary !min-h-10 !px-3"
+          >
             {players}P
           </button>
         </div>
@@ -92,13 +120,21 @@ export default function Memory({ onBack }: { onBack: () => void }) {
               <Stat label="P2" value={scores[1]} active={current === 1} />
             </div>
           )}
-          <div className="mt-3 text-xs font-bold text-[var(--ink-soft)]">{message}</div>
+          <div className="mt-3 text-xs font-bold text-[var(--ink-soft)]">
+            {message}
+          </div>
         </Panel>
       }
-      tips={["Remember card positions after each flip.", "In 2P mode, turns switch after a miss.", "Fewer pairs = faster games."]}
+      tips={[
+        "Remember card positions after each flip.",
+        "In 2P mode, turns switch after a miss.",
+        "Fewer pairs = faster games.",
+      ]}
     >
       <div className="heritage-card p-4 md:p-5">
-        <div className={`grid gap-3 max-w-[560px] mx-auto ${pairs > 8 ? "grid-cols-6" : "grid-cols-4"}`}>
+        <div
+          className={`grid gap-3 max-w-[560px] mx-auto ${pairs > 8 ? "grid-cols-6" : "grid-cols-4"}`}
+        >
           {grid.map((emoji, i) => (
             <button
               key={i}
