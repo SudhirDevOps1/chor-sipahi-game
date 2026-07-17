@@ -8,7 +8,7 @@ export function PrismAnalyticsWidget() {
 
   useEffect(() => {
     const url =
-      "https://prismanalytics.sudhirdevops1.workers.dev/api/widget?siteId=pa_68b09532d86f4522be9b";
+      "https://prismanalytics.sudhirdevops1.workers.dev/api/widget?siteId=pa_f1f1588a236440788468";
     function update() {
       fetch(url)
         .then((res) => res.json())
