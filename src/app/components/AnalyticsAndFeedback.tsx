@@ -158,7 +158,7 @@ export function FormForgeContactForm() {
         params.append(key, value.toString());
       });
       const res = await fetch(
-        "https://apnaform.sudhirdevops1.workers.dev/api/submit/endpoint_hSQ8pIPJWdphv4LunoqB4XgG",
+        "https://apnaform.sudhirdevops1.workers.dev/api/submit/endpoint_7TI7aqzrQJ7lBCJtO07W5z5O",
         {
           method: "POST",
           headers: {

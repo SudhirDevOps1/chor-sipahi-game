@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Script id="prism-analytics" strategy="afterInteractive">
           {`
             (function(){
-              var id='pa_5eef70cd98b2492184e7', url='https://prismanalytics.sudhirdevops1.workers.dev/api/track';
+              var id='pa_68b09532d86f4522be9b', url='https://prismanalytics.sudhirdevops1.workers.dev/api/track';
               var sid=sessionStorage.getItem('pa_sid')||crypto.randomUUID();
               sessionStorage.setItem('pa_sid',sid);
               function t(e,d){
