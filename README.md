@@ -29,12 +29,10 @@ A table requires exactly **four players**. In every round, the server shuffles a
 
 ## ✨ Features & Architecture
 
-* **The Board Games Suite**: Features 15+ newly added classic board and card games (Chess, Battleship, Ludo, Teen Patti, Uno, CallBreak, Connect Four, Jhandi Munda, etc.) integrated alongside the core guessing game in a unified GameShell architecture.
-* **Premium "Heritage" Design System**: Complete UI/UX overhaul featuring vintage paper-and-ink aesthetics (`#f7f0df`), smooth micro-animations (`pulseGlow`, `slideUpFade`), and native SVG icons for a rich tactile feel.
-* **Visibility-Aware Backend Polling**: Smart serverless optimization that automatically pauses network syncs when the browser tab is hidden, preventing Cloudflare Workers rate-limit exhaustion and eliminating game lag.
 * **D1 Cloudflare Database**: Powered by Cloudflare D1 (SQLite) with Drizzle ORM integration.
 * **OpenNext Build Wrapper**: Compiles directly into Cloudflare Workers and Assets, resolving asset copy issues on Windows.
-* **Zero-Cookie Privacy**: Anonymous session IDs generated dynamically from 256-bit salted browser seeds.
+* **Persistent Dark Mode**: Toggle between light and dark modes with automated theme persistence in `localStorage`.
+* **Zero-Cookie Privacy**: Anonymous session IDs generated dynamically from salted browser seeds.
 * **Real Web Icons**: Native high-quality SVG favicon (`favicon.svg`) and high-resolution PNG icon (`icon.png`) fully configured in layouts.
 * **Edge-First Security**: Route-level security headers, encrypted device identity seeds, and fully server-authoritative state checks to prevent cheat inspection.
 
